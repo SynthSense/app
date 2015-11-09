@@ -25,6 +25,16 @@
 
 #import "DMRecognizerAppDelegate.h"
 #import "DMRecognizerViewController.h"
+#import "ScanViewController.h"
+
+#import "RFduinoManager.h"
+
+@interface DMRecognizerAppDelegate()
+{
+    RFduinoManager *rfduinoManager;
+    bool wasScanning;
+}
+@end
 
 @implementation DMRecognizerAppDelegate
 
@@ -37,16 +47,42 @@
     // Override point for customization after app launch    
     [window setRootViewController:viewController];
     [window makeKeyAndVisible];
-	
-	return YES;
+    rfduinoManager = RFduinoManager.sharedRFduinoManager;
+    ScanViewController *tviewController = [[ScanViewController alloc] init];
+    
+    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:tviewController];
+    [self.window setRootViewController:navController];
+    
+    navController.navigationBar.tintColor = [UIColor colorWithRed:0.0 green:0.0 blue:0.0 alpha:1.0];
+    
+    self.window.backgroundColor = [UIColor whiteColor];
+    [self.window makeKeyAndVisible];
+    
+    return YES;
 }
 
 
 - (void)applicationWillResignActive:(UIApplication *)application
 {
+    wasScanning = false;
+    
+    if (rfduinoManager.isScanning) {
+        wasScanning = true;
+        [rfduinoManager stopScan];
+    }
     [viewController.voiceSearch cancel];
 }
-
+- (void)applicationDidBecomeActive:(UIApplication *)application
+{
+    NSLog(@"applicationDidBecomeActive");
+    
+    // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+    
+    if (wasScanning) {
+        [rfduinoManager startScan];
+        wasScanning = false;
+    }
+}
 //- (void)dealloc {
 //    [viewController release];
 //    [window release];

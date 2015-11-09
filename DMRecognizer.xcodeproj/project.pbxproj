@@ -23,6 +23,10 @@
 		44664C291BF0B43800466BB1 /* RfduinoManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 44664C221BF0B43800466BB1 /* RfduinoManager.m */; };
 		44664C2A1BF0B43800466BB1 /* ScanViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 44664C251BF0B43800466BB1 /* ScanViewController.m */; };
 		44664C2B1BF0B43800466BB1 /* CustomCellBackground.m in Sources */ = {isa = PBXBuildFile; fileRef = 44664C271BF0B43800466BB1 /* CustomCellBackground.m */; };
+		44664C2F1BF0B4BA00466BB1 /* AppViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 44664C2D1BF0B4BA00466BB1 /* AppViewController.m */; };
+		44664C301BF0B4BA00466BB1 /* AppViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 44664C2E1BF0B4BA00466BB1 /* AppViewController.xib */; };
+		44664C321BF0B4D600466BB1 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 44664C311BF0B4D600466BB1 /* QuartzCore.framework */; };
+		44664C341BF0B51000466BB1 /* CoreBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 44664C331BF0B51000466BB1 /* CoreBluetooth.framework */; };
 		44A990651BDDBE1800C78C3A /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 44A990641BDDBE1800C78C3A /* MapKit.framework */; };
 		44A990671BDDD8E900C78C3A /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 44A990661BDDD8E900C78C3A /* CoreLocation.framework */; };
 		44A990691BDDDD2800C78C3A /* 2Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 44A990681BDDDD2800C78C3A /* 2Info.plist */; };
@@ -63,6 +67,11 @@
 		44664C251BF0B43800466BB1 /* ScanViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScanViewController.m; sourceTree = "<group>"; };
 		44664C261BF0B43800466BB1 /* CustomCellBackground.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomCellBackground.h; sourceTree = "<group>"; };
 		44664C271BF0B43800466BB1 /* CustomCellBackground.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomCellBackground.m; sourceTree = "<group>"; };
+		44664C2C1BF0B4BA00466BB1 /* AppViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppViewController.h; sourceTree = "<group>"; };
+		44664C2D1BF0B4BA00466BB1 /* AppViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppViewController.m; sourceTree = "<group>"; };
+		44664C2E1BF0B4BA00466BB1 /* AppViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AppViewController.xib; sourceTree = "<group>"; };
+		44664C311BF0B4D600466BB1 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		44664C331BF0B51000466BB1 /* CoreBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreBluetooth.framework; path = System/Library/Frameworks/CoreBluetooth.framework; sourceTree = SDKROOT; };
 		44A990641BDDBE1800C78C3A /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		44A990661BDDD8E900C78C3A /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		44A990681BDDDD2800C78C3A /* 2Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = 2Info.plist; sourceTree = "<group>"; };
@@ -80,12 +89,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				44664C341BF0B51000466BB1 /* CoreBluetooth.framework in Frameworks */,
+				288765A50DF7441C002DB57D /* CoreGraphics.framework in Frameworks */,
+				44664C321BF0B4D600466BB1 /* QuartzCore.framework in Frameworks */,
 				44A990671BDDD8E900C78C3A /* CoreLocation.framework in Frameworks */,
 				44A990651BDDBE1800C78C3A /* MapKit.framework in Frameworks */,
 				372261FF11BEB490000A8E9E /* SpeechKit.framework in Frameworks */,
 				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
 				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
-				288765A50DF7441C002DB57D /* CoreGraphics.framework in Frameworks */,
 				37670F5F119A0069008A608D /* AudioToolbox.framework in Frameworks */,
 				37670F7A119A03C5008A608D /* SystemConfiguration.framework in Frameworks */,
 				C338967C1215ABFA00ADBC45 /* AVFoundation.framework in Frameworks */,
@@ -100,6 +111,9 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				44664C2C1BF0B4BA00466BB1 /* AppViewController.h */,
+				44664C2D1BF0B4BA00466BB1 /* AppViewController.m */,
+				44664C2E1BF0B4BA00466BB1 /* AppViewController.xib */,
 				44664C1E1BF0B43800466BB1 /* RFduino.h */,
 				44664C1F1BF0B43800466BB1 /* RFduino.m */,
 				44664C201BF0B43800466BB1 /* RFduinoDelegate.h */,
@@ -166,6 +180,8 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				44664C331BF0B51000466BB1 /* CoreBluetooth.framework */,
+				44664C311BF0B4D600466BB1 /* QuartzCore.framework */,
 				44A990661BDDD8E900C78C3A /* CoreLocation.framework */,
 				44A990641BDDBE1800C78C3A /* MapKit.framework */,
 				37670F5E119A0069008A608D /* AudioToolbox.framework */,
@@ -239,6 +255,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				44A990691BDDDD2800C78C3A /* 2Info.plist in Resources */,
+				44664C301BF0B4BA00466BB1 /* AppViewController.xib in Resources */,
 				28AD733F0D9D9553002E5188 /* MainWindow.xib in Resources */,
 				37A7451F11BD835300D02E62 /* AppIcon.png in Resources */,
 				C33897AE1215AFB700ADBC45 /* earcon_done_listening.wav in Resources */,
@@ -262,6 +279,7 @@
 				37A7448C11BD768700D02E62 /* DMRecognizerAppDelegate.m in Sources */,
 				37A7448D11BD768700D02E62 /* DMRecognizerViewController.m in Sources */,
 				44664C2B1BF0B43800466BB1 /* CustomCellBackground.m in Sources */,
+				44664C2F1BF0B4BA00466BB1 /* AppViewController.m in Sources */,
 				44664C281BF0B43800466BB1 /* RFduino.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
