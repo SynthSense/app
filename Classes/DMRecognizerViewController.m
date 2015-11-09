@@ -49,7 +49,7 @@ const unsigned char SpeechKitApplicationKey[] = {0xad, 0xe3, 0x39, 0xe9, 0xa8, 0
 
 @implementation DMRecognizerViewController
 @synthesize recordButton,searchBox,serverBox,portBox,alternativesDisplay,vuMeter,voiceSearch,curLocBox;
-@synthesize synthesizer, geocoder, currentAddress, currentLocation, directions, curLocLat, curLocLon;
+@synthesize synthesizer, geocoder, currentAddress, currentLocation, directions, curLocLat, curLocLon, rfduino;
 @synthesize locationManager = _locationManager;
 
 /*
@@ -123,11 +123,30 @@ const unsigned char SpeechKitApplicationKey[] = {0xad, 0xe3, 0x39, 0xe9, 0xa8, 0
     } else {
         [_locationManager startUpdatingLocation]; //Will update location immediately
     }
-    
+    [rfduino setDelegate:self];
+
     //if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 8.0)
     //[_locationManager requestWhenInUseAuthorization];
     //[_locationManager startUpdatingLocation];
-
+    UIButton *but1= [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    [but1 addTarget:self action:@selector(leftButton:) forControlEvents:UIControlEventTouchUpInside];
+    [but1 setFrame:CGRectMake(20, 510, 60, 40)];
+    [but1 setTitle:@"Left turn" forState:UIControlStateNormal];
+    [but1 setExclusiveTouch:YES];
+    
+    // if you like to add backgroundImage else no need
+    
+    [self.view addSubview:but1];
+    
+    UIButton *but2= [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    [but2 addTarget:self action:@selector(rightButton:) forControlEvents:UIControlEventTouchUpInside];
+    [but2 setFrame:CGRectMake(200, 510, 60, 40)];
+    [but2 setTitle:@"Right turn" forState:UIControlStateNormal];
+    [but2 setExclusiveTouch:YES];
+    
+    // if you like to add backgroundImage else no need
+    
+    [self.view addSubview:but2];
 }
 
 /*
@@ -470,4 +489,34 @@ const unsigned char SpeechKitApplicationKey[] = {0xad, 0xe3, 0x39, 0xe9, 0xa8, 0
     return YES;
 }
 
+
+#pragma mark -
+#pragma mark RFDuino methods
+-(void) leftButton:(UIButton*)sender
+{
+    [self sendByte:2];
+}
+-(void) rightButton:(UIButton*)sender
+{
+    [self sendByte:0];
+}
+- (void)sendByte:(uint8_t)byte
+{
+    uint8_t tx[1] = { byte };
+    NSData *data = [NSData dataWithBytes:(void*)&tx length:1];
+    [rfduino send:data];
+}
+
+
+
+- (void)didReceive:(NSData *)data
+{
+    NSLog(@"RecievedData");
+    
+    const uint8_t *value = [data bytes];
+    // int len = [data length];
+    
+    NSLog(@"value = %x", value[0]);
+
+}
 @end

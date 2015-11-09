@@ -32,7 +32,8 @@
 #import "RFduino.h"
 
 #import "AppViewController.h"
-
+#import "DMRecognizerViewController.h"
+#import "DMRecognizerAppDelegate.h"
 #import "CustomCellBackground.h"
 
 @interface ScanViewController()
@@ -281,6 +282,12 @@
 - (void)didDiscoverRFduino:(RFduino *)rfduino
 {
     NSLog(@"didDiscoverRFduino");
+    NSLog(@"RFDuino name: %@", [rfduino name]);
+    if ([[rfduino name]  isEqual: @"ChillerNavBand"]) {
+        NSLog(@"found the ChillerNavBand!, connecting");
+        [rfduinoManager connectRFduino:rfduino];
+        
+    }
     if (! editingRow) {
         NSLog(@"reloadData");
         [self.tableView reloadData];
@@ -306,11 +313,15 @@
 
 - (void)didLoadServiceRFduino:(RFduino *)rfduino
 {
-    AppViewController *viewController = [[AppViewController alloc] init];
-    viewController.rfduino = rfduino;
-
+    NSLog(@"did load service");
+    //AppViewController *viewController = [[AppViewController alloc] init];
+    //viewController.rfduino = rfduino;
+    //DMRecognizerViewController *vc = [[DMRecognizerViewController alloc] init];
+    //vc.rfduino = rfduino;
+    [[[UIApplication sharedApplication] delegate] performSelector:@selector(setVCAndRFDuino:) withObject:rfduino];
     loadService = true;
-    [[self navigationController] pushViewController:viewController animated:YES];
+    
+   //[[self navigationController] pushViewController:vc animated:YES];
 }
 
 - (void)didDisconnectRFduino:(RFduino *)rfduino

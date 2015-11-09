@@ -26,7 +26,7 @@
 #import <UIKit/UIKit.h>
 
 @class DMRecognizerViewController;
-
+@class RFduino;
 @interface DMRecognizerAppDelegate : NSObject <UIApplicationDelegate> {
     UIWindow *window;
     DMRecognizerViewController *viewController;
@@ -34,6 +34,6 @@
 
 @property (nonatomic, retain) IBOutlet UIWindow *window;
 @property (nonatomic, retain) IBOutlet DMRecognizerViewController *viewController;
-
+-(void)setVCAndRFDuino:(RFduino *)duino;
 @end
 

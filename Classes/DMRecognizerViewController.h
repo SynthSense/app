@@ -27,8 +27,8 @@
 #import <SpeechKit/SpeechKit.h>
 #import <AVFoundation/AVFoundation.h>
 #import <CoreLocation/CoreLocation.h>
-
-@interface DMRecognizerViewController : UIViewController <SpeechKitDelegate, SKRecognizerDelegate, UITextFieldDelegate, CLLocationManagerDelegate> {
+#import "RFduino.h"
+@interface DMRecognizerViewController : UIViewController <SpeechKitDelegate, SKRecognizerDelegate, UITextFieldDelegate, CLLocationManagerDelegate, RFduinoDelegate> {
     IBOutlet UIButton* recordButton;
     IBOutlet UITextField* searchBox;
     IBOutlet UITextField* serverBox;
@@ -39,7 +39,8 @@
     IBOutlet UISegmentedControl* languageType;
     IBOutlet UITextField* curLocBox;
     IBOutlet UILabel *directions;
-    
+
+
     SKRecognizer* voiceSearch;
     enum {
         TS_IDLE,
@@ -68,6 +69,11 @@
 
 @property float curLocLat;
 @property float curLocLon;
+
+@property(strong, nonatomic) RFduino *rfduino;
+
+
+
 
 - (IBAction)recordButtonAction: (id)sender;
 - (IBAction)serverUpdateButtonAction: (id)sender;

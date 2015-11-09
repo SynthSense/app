@@ -28,6 +28,7 @@
 #import "ScanViewController.h"
 
 #import "RFduinoManager.h"
+#import "RFduino.h"
 
 @interface DMRecognizerAppDelegate()
 {
@@ -47,6 +48,7 @@
     // Override point for customization after app launch    
     [window setRootViewController:viewController];
     [window makeKeyAndVisible];
+    
     rfduinoManager = RFduinoManager.sharedRFduinoManager;
     ScanViewController *tviewController = [[ScanViewController alloc] init];
     
@@ -82,6 +84,12 @@
         [rfduinoManager startScan];
         wasScanning = false;
     }
+}
+-(void)setVCAndRFDuino:(RFduino *)duino{
+    viewController.rfduino = duino;
+    [window setRootViewController:viewController];
+    [window makeKeyAndVisible];
+
 }
 //- (void)dealloc {
 //    [viewController release];
