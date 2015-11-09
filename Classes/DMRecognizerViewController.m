@@ -140,7 +140,7 @@ const unsigned char SpeechKitApplicationKey[] = {0xad, 0xe3, 0x39, 0xe9, 0xa8, 0
     
     UIButton *but2= [UIButton buttonWithType:UIButtonTypeRoundedRect];
     [but2 addTarget:self action:@selector(rightButton:) forControlEvents:UIControlEventTouchUpInside];
-    [but2 setFrame:CGRectMake(200, 510, 60, 40)];
+    [but2 setFrame:CGRectMake(200, 510, 90, 40)];
     [but2 setTitle:@"Right turn" forState:UIControlStateNormal];
     [but2 setExclusiveTouch:YES];
     
