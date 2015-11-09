@@ -494,11 +494,11 @@ const unsigned char SpeechKitApplicationKey[] = {0xad, 0xe3, 0x39, 0xe9, 0xa8, 0
 #pragma mark RFDuino methods
 -(void) leftButton:(UIButton*)sender
 {
-    [self sendByte:2];
+    [self sendByte:0];
 }
 -(void) rightButton:(UIButton*)sender
 {
-    [self sendByte:0];
+    [self sendByte:1];
 }
 - (void)sendByte:(uint8_t)byte
 {
