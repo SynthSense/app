@@ -58,11 +58,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Classes/DMRecognizerViewController.m"
-            timestampString = "468763320.998976"
+            timestampString = "468765729.693584"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "249"
-            endingLineNumber = "249"
+            startingLineNumber = "252"
+            endingLineNumber = "252"
             landmarkName = "-recordButtonAction:"
             landmarkType = "5">
          </BreakpointContent>
@@ -74,11 +74,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Classes/DMRecognizerViewController.m"
-            timestampString = "468763320.998976"
+            timestampString = "468765729.693584"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "234"
-            endingLineNumber = "234"
+            startingLineNumber = "237"
+            endingLineNumber = "237"
             landmarkName = "-recordButtonAction:"
             landmarkType = "5">
          </BreakpointContent>
@@ -90,91 +90,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Classes/DMRecognizerViewController.m"
-            timestampString = "468763320.998976"
+            timestampString = "468765729.693584"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "178"
-            endingLineNumber = "178"
+            startingLineNumber = "181"
+            endingLineNumber = "181"
             landmarkName = "-locationManager:didUpdateToLocation:fromLocation:"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Classes/DMRecognizerViewController.m"
-            timestampString = "468763320.998976"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "403"
-            endingLineNumber = "403"
-            landmarkName = "-recognizer:didFinishWithResults:"
-            landmarkType = "5">
-            <Locations>
-               <Location
-                  shouldBeEnabled = "No"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "__62-[DMRecognizerViewController recognizer:didFinishWithResults:]_block_invoke_2"
-                  moduleName = "Recognizer"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/craig/Downloads/DragonMobileSDK_1.4.21/DragonMobileRecognizer/Classes/DMRecognizerViewController.m"
-                  timestampString = "467530380.760243"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "380"
-                  endingLineNumber = "380"
-                  offsetFromSymbolStart = "188">
-               </Location>
-               <Location
-                  shouldBeEnabled = "No"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "__copy_helper_block_186"
-                  moduleName = "Recognizer"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/craig/Downloads/DragonMobileSDK_1.4.21/DragonMobileRecognizer/Classes/DMRecognizerViewController.m"
-                  timestampString = "467530380.760612"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "0"
-                  endingLineNumber = "0"
-                  offsetFromSymbolStart = "24">
-               </Location>
-               <Location
-                  shouldBeEnabled = "No"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "__destroy_helper_block_187"
-                  moduleName = "Recognizer"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/craig/Downloads/DragonMobileSDK_1.4.21/DragonMobileRecognizer/Classes/DMRecognizerViewController.m"
-                  timestampString = "467530380.760984"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "0"
-                  endingLineNumber = "0"
-                  offsetFromSymbolStart = "20">
-               </Location>
-            </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Classes/DMRecognizerViewController.m"
-            timestampString = "468763320.998976"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "402"
-            endingLineNumber = "402"
-            landmarkName = "-recognizer:didFinishWithResults:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

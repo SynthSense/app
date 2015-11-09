@@ -89,6 +89,9 @@
     viewController.rfduino = duino;
     [window setRootViewController:viewController];
     [window makeKeyAndVisible];
+    AVSpeechUtterance *utterance = [[AVSpeechUtterance alloc] initWithString:@"Tap the screen to set destination"];
+    utterance.voice = [AVSpeechSynthesisVoice voiceWithLanguage:@"en-us"];
+    [viewController.synthesizer speakUtterance:utterance];
 
 }
 //- (void)dealloc {

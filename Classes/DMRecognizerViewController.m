@@ -52,6 +52,7 @@ const unsigned char SpeechKitApplicationKey[] = {0xad, 0xe3, 0x39, 0xe9, 0xa8, 0
 @synthesize synthesizer, geocoder, currentAddress, currentLocation, directions, curLocLat, curLocLon, rfduino;
 @synthesize locationManager = _locationManager;
 
+static BOOL confirmed;
 /*
 // The designated initializer. Override to perform setup that is required before the view is loaded.
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
@@ -72,7 +73,7 @@ const unsigned char SpeechKitApplicationKey[] = {0xad, 0xe3, 0x39, 0xe9, 0xa8, 0
 // Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
 - (void)viewDidLoad {
     [super viewDidLoad];
-	
+    confirmed = false;
     /**    
      * The login parameters should be specified in the following manner:
      *
@@ -95,13 +96,13 @@ const unsigned char SpeechKitApplicationKey[] = {0xad, 0xe3, 0x39, 0xe9, 0xa8, 0
                   delegate:nil];
     
 	// Set earcons to play
-	SKEarcon* earconStart	= [SKEarcon earconWithName:@"earcon_listening.wav"];
-	SKEarcon* earconStop	= [SKEarcon earconWithName:@"earcon_done_listening.wav"];
-	SKEarcon* earconCancel	= [SKEarcon earconWithName:@"earcon_cancel.wav"];
-	
-	[SpeechKit setEarcon:earconStart forType:SKStartRecordingEarconType];
-	[SpeechKit setEarcon:earconStop forType:SKStopRecordingEarconType];
-	[SpeechKit setEarcon:earconCancel forType:SKCancelRecordingEarconType];
+//	SKEarcon* earconStart	= [SKEarcon earconWithName:@"earcon_listening.wav"];
+//	SKEarcon* earconStop	= [SKEarcon earconWithName:@"earcon_done_listening.wav"];
+//	SKEarcon* earconCancel	= [SKEarcon earconWithName:@"earcon_cancel.wav"];
+//	
+//	[SpeechKit setEarcon:earconStart forType:SKStartRecordingEarconType];
+//	[SpeechKit setEarcon:earconStop forType:SKStopRecordingEarconType];
+//	[SpeechKit setEarcon:earconCancel forType:SKCancelRecordingEarconType];
     self.synthesizer = [[AVSpeechSynthesizer alloc] init];
     
     
@@ -147,6 +148,8 @@ const unsigned char SpeechKitApplicationKey[] = {0xad, 0xe3, 0x39, 0xe9, 0xa8, 0
     // if you like to add backgroundImage else no need
     
     [self.view addSubview:but2];
+    
+
 }
 
 /*
@@ -263,6 +266,41 @@ const unsigned char SpeechKitApplicationKey[] = {0xad, 0xe3, 0x39, 0xe9, 0xa8, 0
     }
 }
 
+- (void)recordButtonActionFn {
+    [searchBox resignFirstResponder];
+    [serverBox resignFirstResponder];
+    [portBox resignFirstResponder];
+    
+    if (transactionState == TS_RECORDING) {
+        [voiceSearch stopRecording];
+    }
+    else if (transactionState == TS_IDLE) {
+        SKEndOfSpeechDetection detectionType;
+        NSString* recoType;
+        NSString* langType;
+        
+        transactionState = TS_INITIAL;
+        
+        alternativesDisplay.text = @"";
+        
+        /* 'Search' is selected */
+        detectionType = SKShortEndOfSpeechDetection; /* Searches tend to be short utterances free of pauses. */
+        recoType = SKSearchRecognizerType; /* Optimize recognition performance for search text. */
+        langType = @"en_US";
+        
+        /* Nuance can also create a custom recognition type optimized for your application if neither search nor dictation are appropriate. */
+        
+        NSLog(@"Recognizing type:'%@' Language Code: '%@' using end-of-speech detection:%d.", recoType, langType, detectionType);
+        
+        // if (voiceSearch) [voiceSearch release];
+        
+        voiceSearch = [[SKRecognizer alloc] initWithType:recoType
+                                               detection:detectionType
+                                                language:langType
+                                                delegate:self];
+    }
+}
+
 - (IBAction)serverUpdateButtonAction: (id)sender {
     [searchBox resignFirstResponder];
     [serverBox resignFirstResponder];
@@ -353,63 +391,98 @@ const unsigned char SpeechKitApplicationKey[] = {0xad, 0xe3, 0x39, 0xe9, 0xa8, 0
     [recordButton setTitle:@"Record" forState:UIControlStateNormal];
     
     if (numOfResults > 0) {
-        searchBox.text = [results firstResult];
-        AVSpeechUtterance *utterance = [[AVSpeechUtterance alloc] initWithString:searchBox.text];
-        utterance.voice = [AVSpeechSynthesisVoice voiceWithLanguage:@"en-us"];
-        [self.synthesizer speakUtterance:utterance];
+        if (!confirmed) {
+            searchBox.text = [results firstResult];
+            AVSpeechUtterance *utterance = [[AVSpeechUtterance alloc] initWithString:[NSString stringWithFormat:@"Did you mean %@?",[results firstResult]]];
+            
+            utterance.voice = [AVSpeechSynthesisVoice voiceWithLanguage:@"en-us"];
+            [self.synthesizer speakUtterance:utterance];
+            
+            confirmed = true;
+
+            [self performSelector:@selector(recordButtonActionFn) withObject:nil afterDelay:2.0 ];
+            /*voiceSearch = [[SKRecognizer alloc] initWithType:SKSearchRecognizerType
+             detection:SKShortEndOfSpeechDetection
+             language:@"en_US"
+             delegate:self];*/
+        } else {
+            // if yes, get directions to whatever place
+            if ([[results firstResult] isEqualToString:@"Yes"]) {
+                NSLog(@"YAY");
+                AVSpeechUtterance *utterance = [[AVSpeechUtterance alloc] initWithString:[NSString stringWithFormat:@"OK, getting directions to %@",searchBox.text]];
+                
+                utterance.voice = [AVSpeechSynthesisVoice voiceWithLanguage:@"en-us"];
+                [self.synthesizer speakUtterance:utterance];
+
+                confirmed = false;
+                [geocoder geocodeAddressString:searchBox.text completionHandler:^(NSArray *placemarks, NSError *error) {
+                    if(error){
+                        NSLog(@"%@", [error localizedDescription]);
+                    }
+                    
+                    CLPlacemark *placemark = [placemarks lastObject];
+                    
+                    //NSLog(@"%@", currentAddress);
+                    //[directions setText:currentAddress];
+                    
+                    MKDirectionsRequest *request = [[MKDirectionsRequest alloc] init];
+                    if (currentLocation) {
+                        //CLLocation *tmp = [currentLocation copy];
+                        //NSLog(@"%f", tmp.coordinate.latitude);
+                        MKPlacemark *placemarkSrc = [[MKPlacemark alloc] initWithCoordinate:CLLocationCoordinate2DMake(curLocLat, curLocLon) addressDictionary:nil];
+                        MKMapItem *mapItemSrc = [[MKMapItem alloc] initWithPlacemark:placemarkSrc];
+                        
+                        MKPlacemark *placemarkDest = [[MKPlacemark alloc] initWithCoordinate:placemark.location.coordinate addressDictionary:nil];
+                        MKMapItem *mapItemDest = [[MKMapItem alloc] initWithPlacemark:placemarkDest];
+                        
+                        [request setSource:mapItemSrc];
+                        [request setDestination:mapItemDest];
+                        [request setTransportType:MKDirectionsTransportTypeAutomobile];
+                        request.requestsAlternateRoutes = NO;
+                        
+                        MKDirections *dirs = [[MKDirections alloc] initWithRequest:request];
+                        [dirs calculateDirectionsWithCompletionHandler:
+                         ^(MKDirectionsResponse *response, NSError *error) {
+                             if (error) {
+                                 [directions setText:@"ERROR!"];
+                                 
+                                 // Handle Error
+                             } else {
+                                 //[_mapView removeOverlays:_mapView.overlays];
+                                 //NSLog(@"%@", response.)
+                                 MKRoute *route = (MKRoute *)[[response routes] objectAtIndex:0];
+                                 NSMutableString *outStr = [[NSMutableString alloc] initWithString:@""];
+                                 for (NSUInteger i = 0; i < route.steps.count; i++) {
+                                     NSLog(@"%@", [(MKRouteStep *)[route.steps objectAtIndex:i] instructions]);
+                                     [outStr appendString:[NSString stringWithFormat:@"%@\n",[(MKRouteStep *)[route.steps objectAtIndex:i] instructions]] ];
+                                 }
+                                 [directions setText:outStr];
+                                 //[self showRoute:response];
+                             }
+                         }];
+                        
+                    }
+                    
+                    
+                }];
+                
+
+            }
+            //if no, start this over again
+            if ([[results firstResult] isEqualToString:@"No"]) {
+                confirmed = false;
+                AVSpeechUtterance *utterance = [[AVSpeechUtterance alloc] initWithString:@"Sorry about that, please say it again"];
+                
+                utterance.voice = [AVSpeechSynthesisVoice voiceWithLanguage:@"en-us"];
+                [self.synthesizer speakUtterance:utterance];
+                [self performSelector:@selector(recordButtonActionFn) withObject:nil afterDelay:2.0 ];
+
+            }
+
+        }
+ 
+
         
-        [geocoder geocodeAddressString:searchBox.text completionHandler:^(NSArray *placemarks, NSError *error) {
-            if(error){
-                NSLog(@"%@", [error localizedDescription]);
-            }
-            
-            CLPlacemark *placemark = [placemarks lastObject];
-
-            //NSLog(@"%@", currentAddress);
-            //[directions setText:currentAddress];
-            
-            MKDirectionsRequest *request = [[MKDirectionsRequest alloc] init];
-            if (currentLocation) {
-                //CLLocation *tmp = [currentLocation copy];
-                //NSLog(@"%f", tmp.coordinate.latitude);
-                MKPlacemark *placemarkSrc = [[MKPlacemark alloc] initWithCoordinate:CLLocationCoordinate2DMake(curLocLat, curLocLon) addressDictionary:nil];
-                MKMapItem *mapItemSrc = [[MKMapItem alloc] initWithPlacemark:placemarkSrc];
-                
-                MKPlacemark *placemarkDest = [[MKPlacemark alloc] initWithCoordinate:placemark.location.coordinate addressDictionary:nil];
-                MKMapItem *mapItemDest = [[MKMapItem alloc] initWithPlacemark:placemarkDest];
-                
-                [request setSource:mapItemSrc];
-                [request setDestination:mapItemDest];
-                [request setTransportType:MKDirectionsTransportTypeAutomobile];
-                request.requestsAlternateRoutes = NO;
-                
-                MKDirections *dirs = [[MKDirections alloc] initWithRequest:request];
-                [dirs calculateDirectionsWithCompletionHandler:
-                 ^(MKDirectionsResponse *response, NSError *error) {
-                     if (error) {
-                         [directions setText:@"ERROR!"];
-
-                         // Handle Error
-                     } else {
-                         //[_mapView removeOverlays:_mapView.overlays];
-                         //NSLog(@"%@", response.)
-                         MKRoute *route = (MKRoute *)[[response routes] objectAtIndex:0];
-                         NSMutableString *outStr = [[NSMutableString alloc] initWithString:@""];
-                         for (NSUInteger i = 0; i < route.steps.count; i++) {
-                             NSLog(@"%@", [(MKRouteStep *)[route.steps objectAtIndex:i] instructions]);
-                             [outStr appendString:[NSString stringWithFormat:@"%@\n",[(MKRouteStep *)[route.steps objectAtIndex:i] instructions]] ];
-                         }
-                         [directions setText:outStr];
-                         //[self showRoute:response];
-                     }
-                 }];
-
-            }
-           
-
-        }];
-
-
         
 
     }
