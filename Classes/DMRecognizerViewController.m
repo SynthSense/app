@@ -191,20 +191,20 @@ const unsigned char SpeechKitApplicationKey[] = {0xad, 0xe3, 0x39, 0xe9, 0xa8, 0
 }
 
 
-- (void)dealloc {
-    [recordButton release];
-    [searchBox release];
-    [serverBox release];
-    [portBox release];
-    [alternativesDisplay release];
-    [vuMeter release];
-    [recognitionType release];
-	[languageType release];
-    
-    [voiceSearch release];
-	
-    [super dealloc];
-}
+//- (void)dealloc {
+//    [recordButton release];
+//    [searchBox release];
+//    [serverBox release];
+//    [portBox release];
+//    [alternativesDisplay release];
+//    [vuMeter release];
+//    [recognitionType release];
+//	[languageType release];
+//    
+//    [voiceSearch release];
+//	
+//    [super dealloc];
+//}
 
 #pragma mark -
 #pragma mark Actions
@@ -235,7 +235,7 @@ const unsigned char SpeechKitApplicationKey[] = {0xad, 0xe3, 0x39, 0xe9, 0xa8, 0
         
         NSLog(@"Recognizing type:'%@' Language Code: '%@' using end-of-speech detection:%d.", recoType, langType, detectionType);
 
-        if (voiceSearch) [voiceSearch release];
+       // if (voiceSearch) [voiceSearch release];
 		
         voiceSearch = [[SKRecognizer alloc] initWithType:recoType
                                                detection:detectionType
@@ -410,7 +410,7 @@ const unsigned char SpeechKitApplicationKey[] = {0xad, 0xe3, 0x39, 0xe9, 0xa8, 0
         
     }
 
-	[voiceSearch release];
+	//[voiceSearch release];
 	voiceSearch = nil;
 }
 
@@ -446,7 +446,7 @@ const unsigned char SpeechKitApplicationKey[] = {0xad, 0xe3, 0x39, 0xe9, 0xa8, 0
         
     }
     
-	[voiceSearch release];
+	//[voiceSearch release];
 	voiceSearch = nil;
 }
 
