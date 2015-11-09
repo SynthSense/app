@@ -19,6 +19,10 @@
 		37A7448C11BD768700D02E62 /* DMRecognizerAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 37A7448911BD768700D02E62 /* DMRecognizerAppDelegate.m */; };
 		37A7448D11BD768700D02E62 /* DMRecognizerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 37A7448B11BD768700D02E62 /* DMRecognizerViewController.m */; };
 		37A7451F11BD835300D02E62 /* AppIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 37A7451E11BD835300D02E62 /* AppIcon.png */; };
+		44664C281BF0B43800466BB1 /* RFduino.m in Sources */ = {isa = PBXBuildFile; fileRef = 44664C1F1BF0B43800466BB1 /* RFduino.m */; };
+		44664C291BF0B43800466BB1 /* RfduinoManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 44664C221BF0B43800466BB1 /* RfduinoManager.m */; };
+		44664C2A1BF0B43800466BB1 /* ScanViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 44664C251BF0B43800466BB1 /* ScanViewController.m */; };
+		44664C2B1BF0B43800466BB1 /* CustomCellBackground.m in Sources */ = {isa = PBXBuildFile; fileRef = 44664C271BF0B43800466BB1 /* CustomCellBackground.m */; };
 		44A990651BDDBE1800C78C3A /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 44A990641BDDBE1800C78C3A /* MapKit.framework */; };
 		44A990671BDDD8E900C78C3A /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 44A990661BDDD8E900C78C3A /* CoreLocation.framework */; };
 		44A990691BDDDD2800C78C3A /* 2Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 44A990681BDDDD2800C78C3A /* 2Info.plist */; };
@@ -49,6 +53,16 @@
 		37A7448E11BD769800D02E62 /* DMRecognizer_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DMRecognizer_Prefix.pch; sourceTree = "<group>"; };
 		37A7448F11BD76A800D02E62 /* DMRecognizer-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "DMRecognizer-Info.plist"; sourceTree = "<group>"; };
 		37A7451E11BD835300D02E62 /* AppIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AppIcon.png; sourceTree = "<group>"; };
+		44664C1E1BF0B43800466BB1 /* RFduino.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RFduino.h; sourceTree = "<group>"; };
+		44664C1F1BF0B43800466BB1 /* RFduino.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RFduino.m; sourceTree = "<group>"; };
+		44664C201BF0B43800466BB1 /* RFduinoDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RFduinoDelegate.h; sourceTree = "<group>"; };
+		44664C211BF0B43800466BB1 /* RfduinoManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RfduinoManager.h; sourceTree = "<group>"; };
+		44664C221BF0B43800466BB1 /* RfduinoManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RfduinoManager.m; sourceTree = "<group>"; };
+		44664C231BF0B43800466BB1 /* RFduinoManagerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RFduinoManagerDelegate.h; sourceTree = "<group>"; };
+		44664C241BF0B43800466BB1 /* ScanViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScanViewController.h; sourceTree = "<group>"; };
+		44664C251BF0B43800466BB1 /* ScanViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScanViewController.m; sourceTree = "<group>"; };
+		44664C261BF0B43800466BB1 /* CustomCellBackground.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomCellBackground.h; sourceTree = "<group>"; };
+		44664C271BF0B43800466BB1 /* CustomCellBackground.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomCellBackground.m; sourceTree = "<group>"; };
 		44A990641BDDBE1800C78C3A /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		44A990661BDDD8E900C78C3A /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		44A990681BDDDD2800C78C3A /* 2Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = 2Info.plist; sourceTree = "<group>"; };
@@ -86,6 +100,16 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				44664C1E1BF0B43800466BB1 /* RFduino.h */,
+				44664C1F1BF0B43800466BB1 /* RFduino.m */,
+				44664C201BF0B43800466BB1 /* RFduinoDelegate.h */,
+				44664C211BF0B43800466BB1 /* RfduinoManager.h */,
+				44664C221BF0B43800466BB1 /* RfduinoManager.m */,
+				44664C231BF0B43800466BB1 /* RFduinoManagerDelegate.h */,
+				44664C241BF0B43800466BB1 /* ScanViewController.h */,
+				44664C251BF0B43800466BB1 /* ScanViewController.m */,
+				44664C261BF0B43800466BB1 /* CustomCellBackground.h */,
+				44664C271BF0B43800466BB1 /* CustomCellBackground.m */,
 				37A7448811BD768700D02E62 /* DMRecognizerAppDelegate.h */,
 				37A7448911BD768700D02E62 /* DMRecognizerAppDelegate.m */,
 				37A7448A11BD768700D02E62 /* DMRecognizerViewController.h */,
@@ -232,9 +256,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				44664C291BF0B43800466BB1 /* RfduinoManager.m in Sources */,
+				44664C2A1BF0B43800466BB1 /* ScanViewController.m in Sources */,
 				1D60589B0D05DD56006BFB54 /* main.m in Sources */,
 				37A7448C11BD768700D02E62 /* DMRecognizerAppDelegate.m in Sources */,
 				37A7448D11BD768700D02E62 /* DMRecognizerViewController.m in Sources */,
+				44664C2B1BF0B43800466BB1 /* CustomCellBackground.m in Sources */,
+				44664C281BF0B43800466BB1 /* RFduino.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
