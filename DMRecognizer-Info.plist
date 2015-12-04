@@ -2,20 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>The spirit of stack overflow is coders helping coders</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>The spirit of stack overflow is coders helping coders</string>
-	<key>LSApplicationCategoryType</key>
-	<string></string>
-	<key>CFBundleShortVersionString</key>
-	<string></string>
-	<key>NSLocationAlwaysUsageDescription </key>
-	<string>@&quot;using&quot;</string>
-	<key>NSLocationWhenInUseUsageDescription </key>
-	<string>@&quot;Using location&quot;</string>
 	<key> NSLocationAlwaysUsageDescription</key>
-	<string>@&quot;Use location &quot;</string>
+	<string>@"Use location "</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleDisplayName</key>
@@ -32,12 +20,24 @@
 	<string>${PRODUCT_NAME}</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string></string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>1.0</string>
+	<key>LSApplicationCategoryType</key>
+	<string></string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>The spirit of stack overflow is coders helping coders</string>
+	<key>NSLocationAlwaysUsageDescription </key>
+	<string>@"using"</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>The spirit of stack overflow is coders helping coders</string>
+	<key>NSLocationWhenInUseUsageDescription </key>
+	<string>@"Using location"</string>
 	<key>NSMainNibFile</key>
 	<string>MainWindow</string>
 </dict>

@@ -88,9 +88,7 @@ static BOOL confirmed;
      */ 
 
     [SpeechKit setupWithID:@"NMDPTRIAL_chiller_berkeley_edu20151025205244"
-
                       host:@"sandbox.nmdp.nuancemobility.net"
-
                       port:443
                     useSSL:NO
                   delegate:nil];
