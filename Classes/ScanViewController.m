@@ -283,10 +283,10 @@
 {
     NSLog(@"didDiscoverRFduino");
     NSLog(@"RFDuino name: %@", [rfduino name]);
+//    [rfduinoManager connectRFduino:rfduino];
     if ([[rfduino name]  isEqual: @"ChillerNavBand"]) {
         NSLog(@"found the ChillerNavBand!, connecting");
         [rfduinoManager connectRFduino:rfduino];
-        
     }
     if (! editingRow) {
         NSLog(@"reloadData");
