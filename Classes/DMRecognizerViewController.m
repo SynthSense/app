@@ -93,19 +93,9 @@ static BOOL confirmed;
                     useSSL:NO
                   delegate:nil];
     
-	// Set earcons to play
-//	SKEarcon* earconStart	= [SKEarcon earconWithName:@"earcon_listening.wav"];
-//	SKEarcon* earconStop	= [SKEarcon earconWithName:@"earcon_done_listening.wav"];
-//	SKEarcon* earconCancel	= [SKEarcon earconWithName:@"earcon_cancel.wav"];
-//	
-//	[SpeechKit setEarcon:earconStart forType:SKStartRecordingEarconType];
-//	[SpeechKit setEarcon:earconStop forType:SKStopRecordingEarconType];
-//	[SpeechKit setEarcon:earconCancel forType:SKCancelRecordingEarconType];
     self.synthesizer = [[AVSpeechSynthesizer alloc] init];
     
-    
-    //[curLocBox setText:@"TEXT"];
-    geocoder = [[CLGeocoder alloc] init];
+        geocoder = [[CLGeocoder alloc] init];
 
     _locationManager = [CLLocationManager new];
     _locationManager.delegate = self;
@@ -114,19 +104,14 @@ static BOOL confirmed;
     
     if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 8.0 &&
         [CLLocationManager authorizationStatus] != kCLAuthorizationStatusAuthorizedWhenInUse
-        //[CLLocationManager authorizationStatus] != kCLAuthorizationStatusAuthorizedAlways
         ) {
         // Will open an confirm dialog to get user's approval
         [_locationManager requestWhenInUseAuthorization];
-        //[_locationManager requestAlwaysAuthorization];
     } else {
         [_locationManager startUpdatingLocation]; //Will update location immediately
     }
     [rfduino setDelegate:self];
 
-    //if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 8.0)
-    //[_locationManager requestWhenInUseAuthorization];
-    //[_locationManager startUpdatingLocation];
     UIButton *but1= [UIButton buttonWithType:UIButtonTypeRoundedRect];
     [but1 addTarget:self action:@selector(leftButton:) forControlEvents:UIControlEventTouchUpInside];
     [but1 setFrame:CGRectMake(20, 510, 60, 40)];
@@ -147,26 +132,15 @@ static BOOL confirmed;
     
     [self.view addSubview:but2];
     
-    mapView = [[MKMapView alloc] initWithFrame:CGRectMake(10, [[UIScreen mainScreen] bounds].size.height-150, [[UIScreen mainScreen] bounds].size.width-20, 135)];
+    mapView = [[MKMapView alloc] initWithFrame:CGRectMake(10, [[UIScreen mainScreen] bounds].size.height-300, [[UIScreen mainScreen] bounds].size.width-20, 275)];
     [mapView setScrollEnabled:YES];
     [mapView setMapType:MKMapTypeStandard];
     [mapView setShowsBuildings:YES];
     [mapView setShowsUserLocation:YES];
     [mapView setDelegate:self];
     [self.view addSubview:mapView];
-    // start the timer to update directions every second (hack way to do navigation)
-    //[NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(getDirectionsTimer) userInfo:nil repeats:YES]; // the interval is in seconds...
-
-
 }
 
-/*
-// Override to allow orientations other than the default portrait orientation.
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    // Return YES for supported orientations
-    return (interfaceOrientation == UIInterfaceOrientationPortrait);
-}
-*/
 - (void)locationManager:(CLLocationManager*)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status
 {
     switch (status) {
@@ -186,8 +160,6 @@ static BOOL confirmed;
 }
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateToLocation:(CLLocation *)newLocation fromLocation:(CLLocation *)oldLocation {
-    //NSLog(@"OldLocation %f %f", oldLocation.coordinate.latitude, oldLocation.coordinate.longitude);
-    //NSLog(@"NewLocation %f %f", newLocation.coordinate.latitude, newLocation.coordinate.longitude);
     currentLocation = newLocation;
     curLocLat = newLocation.coordinate.latitude;
     curLocLon = newLocation.coordinate.longitude;
@@ -222,21 +194,6 @@ static BOOL confirmed;
 	// e.g. self.myOutlet = nil;
 }
 
-
-//- (void)dealloc {
-//    [recordButton release];
-//    [searchBox release];
-//    [serverBox release];
-//    [portBox release];
-//    [alternativesDisplay release];
-//    [vuMeter release];
-//    [recognitionType release];
-//	[languageType release];
-//    
-//    [voiceSearch release];
-//	
-//    [super dealloc];
-//}
 
 #pragma mark -
 #pragma mark Actions
@@ -348,24 +305,6 @@ static BOOL confirmed;
 }
 
 - (void) destroyed {
-    // Debug - Uncomment this code and fill in your app ID below, and set
-    // the Main Window nib to MainWindow_Debug (in DMRecognizer-Info.plist)
-    // if you need the ability to change servers in DMRecognizer
-    //
-    //[SpeechKit setupWithID:INSERT_YOUR_APPLICATION_ID_HERE
-    //                  host:INSERT_YOUR_HOST_ADDRESS_HERE
-    //                  port:INSERT_YOUR_HOST_PORT_HERE[[portBox text] intValue]
-    //                useSSL:NO
-    //              delegate:self];
-    //
-	// Set earcons to play
-	//SKEarcon* earconStart	= [SKEarcon earconWithName:@"earcon_listening.wav"];
-	//SKEarcon* earconStop	= [SKEarcon earconWithName:@"earcon_done_listening.wav"];
-	//SKEarcon* earconCancel	= [SKEarcon earconWithName:@"earcon_cancel.wav"];
-	//
-	//[SpeechKit setEarcon:earconStart forType:SKStartRecordingEarconType];
-	//[SpeechKit setEarcon:earconStop forType:SKStopRecordingEarconType];
-	//[SpeechKit setEarcon:earconCancel forType:SKCancelRecordingEarconType];    
 }
 
 #pragma mark -
@@ -401,7 +340,7 @@ static BOOL confirmed;
     [recordButton setTitle:@"Record" forState:UIControlStateNormal];
     
     if (numOfResults > -10) {
-        if (!confirmed) {
+        if (0){//!confirmed) {
             searchBox.text = [results firstResult];
             AVSpeechUtterance *utterance = [[AVSpeechUtterance alloc] initWithString:[NSString stringWithFormat:@"Did you mean %@?",[results firstResult]]];
             
@@ -442,8 +381,6 @@ static BOOL confirmed;
                     
                     MKDirectionsRequest *request = [[MKDirectionsRequest alloc] init];
                     if (currentLocation) {
-                        //CLLocation *tmp = [currentLocation copy];
-                        //NSLog(@"%f", tmp.coordinate.latitude);
                         MKPlacemark *placemarkSrc = [[MKPlacemark alloc] initWithCoordinate:CLLocationCoordinate2DMake(curLocLat, curLocLon) addressDictionary:nil];
                         MKMapItem *mapItemSrc = [[MKMapItem alloc] initWithPlacemark:placemarkSrc];
                         
@@ -452,7 +389,7 @@ static BOOL confirmed;
                         
                         [request setSource:mapItemSrc];
                         [request setDestination:mapItemDest];
-                        [request setTransportType:MKDirectionsTransportTypeAutomobile];
+                        [request setTransportType:MKDirectionsTransportTypeWalking];
                         request.requestsAlternateRoutes = NO;
                         
                         MKDirections *dirs = [[MKDirections alloc] initWithRequest:request];
@@ -460,11 +397,7 @@ static BOOL confirmed;
                          ^(MKDirectionsResponse *response, NSError *error) {
                              if (error) {
                                  [directions setText:@"ERROR!"];
-                                 
-                                 // Handle Error
                              } else {
-                                 //[_mapView removeOverlays:_mapView.overlays];
-                                 //NSLog(@"%@", response.)
                                  MKRoute *route = (MKRoute *)[[response routes] objectAtIndex:0];
                                  NSMutableString *outStr = [[NSMutableString alloc] initWithString:@""];
                                  for (NSUInteger i = 0; i < route.steps.count; i++) {
@@ -472,7 +405,6 @@ static BOOL confirmed;
                                      [outStr appendString:[NSString stringWithFormat:@"%@\n",[(MKRouteStep *)[route.steps objectAtIndex:i] instructions]] ];
                                  }
                                  [directions setText:outStr];
-                                 //[self showRoute:response];
                              }
                          }];
                         
@@ -612,7 +544,6 @@ static BOOL confirmed;
     MKPolylineView *polylineView = [[MKPolylineView alloc] initWithPolyline:overlay];
     polylineView.strokeColor = [UIColor blueColor];
     polylineView.lineWidth = 5.0;
-    
     return polylineView;
 }
 // https://software.intel.com/en-us/blogs/2012/11/30/calculating-a-bearing-between-points-in-location-aware-apps
@@ -668,7 +599,6 @@ static BOOL confirmed;
              
          } else {
              MKRoute *route = (MKRoute *)[[response routes] objectAtIndex:0];
-             // TODO: remove the previous polyline
              if (prevPolyline) {
                  [mapView removeOverlay:prevPolyline];
              }
@@ -676,38 +606,33 @@ static BOOL confirmed;
              prevPolyline = route.polyline;
              
              [mapView setVisibleMapRect:route.polyline.boundingMapRect edgePadding:UIEdgeInsetsMake(5, 5, 5, 5) animated:YES];
-             NSMutableString *outStr = [[NSMutableString alloc] initWithString:@""];
+
              searchBox.text = [NSString stringWithFormat:@"%d : Distance left of first step: %f",timerDirectionsCount,[(MKRouteStep *)[route.steps objectAtIndex:0] distance]];
-             for (NSUInteger i = 0; i < route.steps.count; i++) {
-                 //NSLog(@"%@", [(MKRouteStep *)[route.steps objectAtIndex:i] instructions]);
-                 [outStr appendString:[NSString stringWithFormat:@"%@\n",[(MKRouteStep *)[route.steps objectAtIndex:i] instructions]] ];
-             }
              NSUInteger pointCount = route.polyline.pointCount;
              //http://stackoverflow.com/a/21865454
              //allocate a C array to hold this many points/coordinates...
-             CLLocationCoordinate2D *rc
-             = malloc(pointCount * sizeof(CLLocationCoordinate2D));
+             CLLocationCoordinate2D *rc = malloc(pointCount * sizeof(CLLocationCoordinate2D));
+             
              
              //get the coordinates (all of them)...
              [route.polyline getCoordinates:rc
                                       range:NSMakeRange(0, pointCount)];
              
+             CLLocation *currentLocation = [[CLLocation alloc] initWithLatitude:curLocLat longitude:curLocLon];
+             
              //this part just shows how to use the results...
              NSLog(@"route pointCount = %lu", (unsigned long)pointCount);
-             for (int c=1; c < pointCount; c++)
+             for (int c = 1; c < pointCount - 1; c++)
              {
                  NSLog(@"routeCoordinates[%d] = %f, %f",
                        c, rc[c].latitude, rc[c].longitude);
-                 
                  NSLog(@"Angle: %f",[self getDifferenceBetweenAngle1:[self getBearingForLocation1:rc[c-1] location2:rc[c]] angle2:[self getBearingForLocation1:rc[c] location2:rc[c+1]]]);
-                 
-                
+                 NSLog(@"Distance from cur to point: %f", [currentLocation distanceFromLocation:[[CLLocation alloc] initWithLatitude:rc[c].latitude longitude:rc[c].longitude]] );
              }
              
              //free the memory used by the C array when done with it...
              free(rc);
 
-             [directions setText:outStr];
              timerDirectionsCount++;
          }
      }];
