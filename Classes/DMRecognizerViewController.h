@@ -81,6 +81,11 @@
 
 @property(strong, nonatomic) MKMapView *mapView;
 @property(strong, nonatomic) MKPolyline *prevPolyline;
+
+@property(strong, nonatomic) NSMutableArray *angles;
+@property(strong, nonatomic) MKRoute *currentRoute;
+@property int curPointIndex;
+
 - (IBAction)recordButtonAction: (id)sender;
 - (IBAction)serverUpdateButtonAction: (id)sender;
 

@@ -27,7 +27,8 @@
 #import <MapKit/MapKit.h>
 #import <MapKit/MKMapItem.h>
 #import <CoreLocation/CoreLocation.h>
-#import <math.h>;
+#import <math.h>
+
 /**
  * The login parameters should be specified in the following manner:
  * 
@@ -49,7 +50,7 @@ const unsigned char SpeechKitApplicationKey[] = {0xad, 0xe3, 0x39, 0xe9, 0xa8, 0
 
 @implementation DMRecognizerViewController
 @synthesize recordButton,searchBox,serverBox,portBox,alternativesDisplay,vuMeter,voiceSearch,curLocBox;
-@synthesize synthesizer, geocoder, currentAddress, currentLocation, directions, curLocLat, curLocLon, rfduino, placemark, timerDirectionsCount, mapView, prevPolyline;
+@synthesize synthesizer, geocoder, currentAddress, currentLocation, directions, curLocLat, curLocLon, rfduino, placemark, timerDirectionsCount, mapView, prevPolyline, angles, curPointIndex, currentRoute;
 @synthesize locationManager = _locationManager;
 
 static BOOL confirmed;
@@ -180,7 +181,7 @@ static BOOL confirmed;
         [curLocBox setText:currentAddress];
 
     }];
-    [self getDirectionsTimer];
+    [self trackPosition];
 }
 - (void)didReceiveMemoryWarning {
 	// Releases the view if it doesn't have a superview.
@@ -356,7 +357,7 @@ static BOOL confirmed;
              delegate:self];*/
         } else {
             if (1==1) {
-                searchBox.text = @"1849 Shattuck Ave Berkeley CA 94709";
+                searchBox.text = @"2700 Hearst Ave Berkeley CA 94720";
 
             // if yes, get directions to whatever place
             //if ([[results firstResult] isEqualToString:@"Yes"]) {
@@ -375,44 +376,9 @@ static BOOL confirmed;
                     }
                     
                     placemark = [placemarks lastObject];
-                    
-                    //NSLog(@"%@", currentAddress);
-                    //[directions setText:currentAddress];
-                    
-                    MKDirectionsRequest *request = [[MKDirectionsRequest alloc] init];
-                    if (currentLocation) {
-                        MKPlacemark *placemarkSrc = [[MKPlacemark alloc] initWithCoordinate:CLLocationCoordinate2DMake(curLocLat, curLocLon) addressDictionary:nil];
-                        MKMapItem *mapItemSrc = [[MKMapItem alloc] initWithPlacemark:placemarkSrc];
-                        
-                        MKPlacemark *placemarkDest = [[MKPlacemark alloc] initWithCoordinate:placemark.location.coordinate addressDictionary:nil];
-                        MKMapItem *mapItemDest = [[MKMapItem alloc] initWithPlacemark:placemarkDest];
-                        
-                        [request setSource:mapItemSrc];
-                        [request setDestination:mapItemDest];
-                        [request setTransportType:MKDirectionsTransportTypeWalking];
-                        request.requestsAlternateRoutes = NO;
-                        
-                        MKDirections *dirs = [[MKDirections alloc] initWithRequest:request];
-                        [dirs calculateDirectionsWithCompletionHandler:
-                         ^(MKDirectionsResponse *response, NSError *error) {
-                             if (error) {
-                                 [directions setText:@"ERROR!"];
-                             } else {
-                                 MKRoute *route = (MKRoute *)[[response routes] objectAtIndex:0];
-                                 NSMutableString *outStr = [[NSMutableString alloc] initWithString:@""];
-                                 for (NSUInteger i = 0; i < route.steps.count; i++) {
-                                     NSLog(@"%@", [(MKRouteStep *)[route.steps objectAtIndex:i] instructions]);
-                                     [outStr appendString:[NSString stringWithFormat:@"%@\n",[(MKRouteStep *)[route.steps objectAtIndex:i] instructions]] ];
-                                 }
-                                 [directions setText:outStr];
-                             }
-                         }];
-                        
-                    }
-                    
-                    
+                    [self setupRoutes];
                 }];
-                
+                 
 
             }
             //if no, start this over again
@@ -575,68 +541,89 @@ static BOOL confirmed;
     int sign = (a1 - a2 >= 0 && a1 - a2 <= 180) || (a1 - a2 <=-180 && a1- a2>= -360) ? 1 : -1;
     return r*sign;
 }
--(void) getDirectionsTimer {
-    if (placemark) {
-        
-    MKPlacemark *placemarkSrc = [[MKPlacemark alloc] initWithCoordinate:CLLocationCoordinate2DMake(curLocLat, curLocLon) addressDictionary:nil];
-    MKMapItem *mapItemSrc = [[MKMapItem alloc] initWithPlacemark:placemarkSrc];
+-(void) trackPosition{
+    NSUInteger pointCount = currentRoute.polyline.pointCount;
+    //http://stackoverflow.com/a/21865454
+    //allocate a C array to hold this many points/coordinates...
+    CLLocationCoordinate2D *rc = malloc(pointCount * sizeof(CLLocationCoordinate2D));
+    //get the coordinates (all of them)...
+    [currentRoute.polyline getCoordinates:rc range:NSMakeRange(0, pointCount)];
     
-    MKPlacemark *placemarkDest = [[MKPlacemark alloc] initWithCoordinate:placemark.location.coordinate addressDictionary:nil];
-        
-    MKMapItem *mapItemDest = [[MKMapItem alloc] initWithPlacemark:placemarkDest];
-    MKDirectionsRequest *request = [[MKDirectionsRequest alloc] init];
-        NSLog(@"MapItemFor current loc lat:%f lon:%f",mapItemSrc.placemark.coordinate.latitude, mapItemSrc.placemark.coordinate.longitude );
-    [request setSource:mapItemSrc];
-    [request setDestination:mapItemDest];
-    [request setTransportType:MKDirectionsTransportTypeWalking];
-    request.requestsAlternateRoutes = NO;
-    
-    MKDirections *dirs = [[MKDirections alloc] initWithRequest:request];
-    [dirs calculateDirectionsWithCompletionHandler:
-     ^(MKDirectionsResponse *response, NSError *error) {
-         if (error) {
-             [directions setText:[NSString stringWithFormat:@"ERROR: %@!", error.description]];
-             
-         } else {
-             MKRoute *route = (MKRoute *)[[response routes] objectAtIndex:0];
-             if (prevPolyline) {
-                 [mapView removeOverlay:prevPolyline];
-             }
-             [mapView addOverlay:route.polyline];
-             prevPolyline = route.polyline;
-             
-             [mapView setVisibleMapRect:route.polyline.boundingMapRect edgePadding:UIEdgeInsetsMake(5, 5, 5, 5) animated:YES];
-
-             searchBox.text = [NSString stringWithFormat:@"%d : Distance left of first step: %f",timerDirectionsCount,[(MKRouteStep *)[route.steps objectAtIndex:0] distance]];
-             NSUInteger pointCount = route.polyline.pointCount;
-             //http://stackoverflow.com/a/21865454
-             //allocate a C array to hold this many points/coordinates...
-             CLLocationCoordinate2D *rc = malloc(pointCount * sizeof(CLLocationCoordinate2D));
-             
-             
-             //get the coordinates (all of them)...
-             [route.polyline getCoordinates:rc
-                                      range:NSMakeRange(0, pointCount)];
-             
-             CLLocation *currentLocation = [[CLLocation alloc] initWithLatitude:curLocLat longitude:curLocLon];
-             
-             //this part just shows how to use the results...
-             NSLog(@"route pointCount = %lu", (unsigned long)pointCount);
-             for (int c = 1; c < pointCount - 1; c++)
-             {
-                 NSLog(@"routeCoordinates[%d] = %f, %f",
-                       c, rc[c].latitude, rc[c].longitude);
-                 NSLog(@"Angle: %f",[self getDifferenceBetweenAngle1:[self getBearingForLocation1:rc[c-1] location2:rc[c]] angle2:[self getBearingForLocation1:rc[c] location2:rc[c+1]]]);
-                 NSLog(@"Distance from cur to point: %f", [currentLocation distanceFromLocation:[[CLLocation alloc] initWithLatitude:rc[c].latitude longitude:rc[c].longitude]] );
-             }
-             
-             //free the memory used by the C array when done with it...
-             free(rc);
-
-             timerDirectionsCount++;
-         }
-     }];
+    CLLocation *testLocation = [[CLLocation alloc] initWithLatitude:rc[curPointIndex].latitude longitude:rc[curPointIndex].longitude];
+    if ([testLocation distanceFromLocation:currentLocation] < 5) { // change if less than 5 meters away
+        // alert the user
+        double ang =[(NSNumber *)[angles objectAtIndex:curPointIndex] doubleValue];
+        if ( fabs(ang) > 65) {
+            if (ang < 0) {
+                // right turn
+            } else {
+                // left turn
+            }
+        }
+        curPointIndex++;
     }
-    
+}
+-(void) setupRoutes {
+    if (placemark) {
+        MKPlacemark *placemarkSrc = [[MKPlacemark alloc] initWithCoordinate:CLLocationCoordinate2DMake(curLocLat, curLocLon) addressDictionary:nil];
+        MKMapItem *mapItemSrc = [[MKMapItem alloc] initWithPlacemark:placemarkSrc];
+        
+        MKPlacemark *placemarkDest = [[MKPlacemark alloc] initWithCoordinate:placemark.location.coordinate addressDictionary:nil];
+            
+        MKMapItem *mapItemDest = [[MKMapItem alloc] initWithPlacemark:placemarkDest];
+        MKDirectionsRequest *request = [[MKDirectionsRequest alloc] init];
+            NSLog(@"MapItemFor current loc lat:%f lon:%f",mapItemSrc.placemark.coordinate.latitude, mapItemSrc.placemark.coordinate.longitude );
+        [request setSource:mapItemSrc];
+        [request setDestination:mapItemDest];
+        [request setTransportType:MKDirectionsTransportTypeWalking];
+        request.requestsAlternateRoutes = NO;
+        
+        MKDirections *dirs = [[MKDirections alloc] initWithRequest:request];
+        [dirs calculateDirectionsWithCompletionHandler:
+         ^(MKDirectionsResponse *response, NSError *error) {
+             if (error) {
+                 [directions setText:[NSString stringWithFormat:@"ERROR: %@!", error.description]];
+                 
+             } else {
+                 MKRoute *route = (MKRoute *)[[response routes] objectAtIndex:0];
+                 if (prevPolyline) {
+                     [mapView removeOverlay:prevPolyline];
+                 }
+                 [mapView addOverlay:route.polyline];
+                 prevPolyline = route.polyline;
+                 
+                 [mapView setVisibleMapRect:route.polyline.boundingMapRect edgePadding:UIEdgeInsetsMake(5, 5, 5, 5) animated:YES];
+
+                 searchBox.text = [NSString stringWithFormat:@"Distance left of first step: %f",[(MKRouteStep *)[route.steps objectAtIndex:0] distance]];
+                 NSUInteger pointCount = route.polyline.pointCount;
+                 //http://stackoverflow.com/a/21865454
+                 //allocate a C array to hold this many points/coordinates...
+                 CLLocationCoordinate2D *rc = malloc(pointCount * sizeof(CLLocationCoordinate2D));
+                 
+                 
+                 //get the coordinates (all of them)...
+                 [route.polyline getCoordinates:rc
+                                          range:NSMakeRange(0, pointCount)];
+                 
+                 angles = [[NSMutableArray alloc] initWithCapacity:pointCount];
+                 [angles addObject:[NSNumber numberWithDouble:0]];
+                 
+                 //this part just shows how to use the results...
+                 NSLog(@"route pointCount = %lu", (unsigned long)pointCount);
+                 for (int c = 1; c < pointCount - 1; c++)
+                 {
+                     [angles addObject:[NSNumber numberWithDouble:[self getDifferenceBetweenAngle1:[self getBearingForLocation1:rc[c-1] location2:rc[c]] angle2:[self getBearingForLocation1:rc[c] location2:rc[c+1]]]]];
+                     NSLog(@"routeCoordinates[%d] = %f, %f",
+                           c, rc[c].latitude, rc[c].longitude);
+                     NSLog(@"Angle: %f",[self getDifferenceBetweenAngle1:[self getBearingForLocation1:rc[c-1] location2:rc[c]] angle2:[self getBearingForLocation1:rc[c] location2:rc[c+1]]]);
+                     NSLog(@"Distance from cur to point: %f", [currentLocation distanceFromLocation:[[CLLocation alloc] initWithLatitude:rc[c].latitude longitude:rc[c].longitude]] );
+                 }
+                 
+                 //free the memory used by the C array when done with it...
+                 free(rc);
+                 currentRoute = route;
+             }
+         }];
+    }
 }
 @end
