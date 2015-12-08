@@ -683,7 +683,7 @@ static BOOL confirmed;
                  [outStr appendString:[NSString stringWithFormat:@"%@\n",[(MKRouteStep *)[route.steps objectAtIndex:i] instructions]] ];
              }
              NSUInteger pointCount = route.polyline.pointCount;
-             
+             //http://stackoverflow.com/a/21865454
              //allocate a C array to hold this many points/coordinates...
              CLLocationCoordinate2D *rc
              = malloc(pointCount * sizeof(CLLocationCoordinate2D));
