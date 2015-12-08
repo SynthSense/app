@@ -289,7 +289,7 @@ static CBUUID *service_uuid;
 - (void)startScan
 {
     NSLog(@"startScan");
-    
+    return;
     isScanning = true;
 
     NSDictionary *options = nil;

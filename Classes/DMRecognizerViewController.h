@@ -28,7 +28,10 @@
 #import <AVFoundation/AVFoundation.h>
 #import <CoreLocation/CoreLocation.h>
 #import "RFduino.h"
-@interface DMRecognizerViewController : UIViewController <SpeechKitDelegate, SKRecognizerDelegate, UITextFieldDelegate, CLLocationManagerDelegate, RFduinoDelegate> {
+#import <MapKit/MapKit.h>
+
+@class MKMapView;
+@interface DMRecognizerViewController : UIViewController <SpeechKitDelegate, SKRecognizerDelegate, UITextFieldDelegate, CLLocationManagerDelegate, RFduinoDelegate, MKMapViewDelegate> {
     IBOutlet UIButton* recordButton;
     IBOutlet UITextField* searchBox;
     IBOutlet UITextField* serverBox;
@@ -73,8 +76,11 @@
 @property(strong, nonatomic) RFduino *rfduino;
 
 
+@property(strong, nonatomic) CLPlacemark *placemark;
+@property int timerDirectionsCount;
 
-
+@property(strong, nonatomic) MKMapView *mapView;
+@property(strong, nonatomic) MKPolyline *prevPolyline;
 - (IBAction)recordButtonAction: (id)sender;
 - (IBAction)serverUpdateButtonAction: (id)sender;
 
