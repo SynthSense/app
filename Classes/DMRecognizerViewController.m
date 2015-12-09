@@ -133,12 +133,14 @@ static BOOL confirmed;
     
     [self.view addSubview:but2];
     
-    mapView = [[MKMapView alloc] initWithFrame:CGRectMake(10, [[UIScreen mainScreen] bounds].size.height-300, [[UIScreen mainScreen] bounds].size.width-20, 275)];
+    mapView = [[MKMapView alloc] initWithFrame:CGRectMake(10, [[UIScreen mainScreen] bounds].size.height-210, [[UIScreen mainScreen] bounds].size.width-20, 200)];
     [mapView setScrollEnabled:YES];
     [mapView setMapType:MKMapTypeStandard];
     [mapView setShowsBuildings:YES];
     [mapView setShowsUserLocation:YES];
     [mapView setDelegate:self];
+    [mapView.layer setCornerRadius:10];
+    [mapView.layer setMasksToBounds:YES];
     [self.view addSubview:mapView];
 }
 
@@ -165,22 +167,24 @@ static BOOL confirmed;
     curLocLat = newLocation.coordinate.latitude;
     curLocLon = newLocation.coordinate.longitude;
     NSLog(@"new location lat:%f lon:%f", curLocLat, curLocLon);
-    [geocoder reverseGeocodeLocation:newLocation completionHandler:^(NSArray *placemarks, NSError *error) {
-        if(error){
-            NSLog(@"%@", [error localizedDescription]);
-        }
-        
-        CLPlacemark *placemark = [placemarks lastObject];
-        
-        currentAddress = [NSString stringWithFormat:@"%@ %@\n%@ %@\n%@\n%@",
-                              placemark.subThoroughfare, placemark.thoroughfare,
-                              placemark.postalCode, placemark.locality,
-                              placemark.administrativeArea,
-                              placemark.country];
-        NSLog(@"%@", currentAddress);
-        [curLocBox setText:currentAddress];
+    if(!placemark){
+        [geocoder reverseGeocodeLocation:newLocation completionHandler:^(NSArray *placemarks, NSError *error) {
+            if(error){
+                NSLog(@"%@", [error localizedDescription]);
+            }
+            
+            CLPlacemark *placemark = [placemarks lastObject];
+            
+            currentAddress = [NSString stringWithFormat:@"%@ %@\n%@ %@\n%@\n%@",
+                                  placemark.subThoroughfare, placemark.thoroughfare,
+                                  placemark.postalCode, placemark.locality,
+                                  placemark.administrativeArea,
+                                  placemark.country];
+            //NSLog(@"%@", currentAddress);
+            [curLocBox setText:currentAddress];
 
-    }];
+        }];
+    }
     [self trackPosition];
 }
 - (void)didReceiveMemoryWarning {
@@ -357,7 +361,7 @@ static BOOL confirmed;
              delegate:self];*/
         } else {
             if (1==1) {
-                searchBox.text = @"2700 Hearst Ave Berkeley CA 94720";
+                searchBox.text = @"2521 Hearst Ave Berkeley, CA  94709-1114 United States";
 
             // if yes, get directions to whatever place
             //if ([[results firstResult] isEqualToString:@"Yes"]) {
@@ -548,16 +552,53 @@ static BOOL confirmed;
     CLLocationCoordinate2D *rc = malloc(pointCount * sizeof(CLLocationCoordinate2D));
     //get the coordinates (all of them)...
     [currentRoute.polyline getCoordinates:rc range:NSMakeRange(0, pointCount)];
-    
+    BOOL lastStep = NO;
     CLLocation *testLocation = [[CLLocation alloc] initWithLatitude:rc[curPointIndex].latitude longitude:rc[curPointIndex].longitude];
-    if ([testLocation distanceFromLocation:currentLocation] < 5) { // change if less than 5 meters away
+    double dist =[testLocation distanceFromLocation:currentLocation];
+    double ang = 0;
+    if (curPointIndex < angles.count) {
+        ang =[(NSNumber *)[angles objectAtIndex:curPointIndex] doubleValue];
+    } else {
+        lastStep = YES;
+        NSString *instr = [[[currentRoute.steps lastObject] instructions] lowercaseString];
+        if ([instr containsString:@"left"]) {
+            ang = 90;
+        } else {
+            ang = -90;
+        }
+    }
+
+    searchBox.text = [NSString stringWithFormat:@"Distance from next point: %.2f ang: %.2f", dist, ang];
+    if (dist < 10) { // change if less than 10 meters away
         // alert the user
-        double ang =[(NSNumber *)[angles objectAtIndex:curPointIndex] doubleValue];
+        NSString *alertStr;
         if ( fabs(ang) > 65) {
             if (ang < 0) {
-                // right turn
+                alertStr = @"TURN RIGHT";
+                if (lastStep) {
+                    alertStr = @"ARRIVE RIGHT";
+
+                }
+                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:alertStr
+                                                                message:[NSString stringWithFormat:@"Angle: %f", ang]
+                                                               delegate:nil
+                                                      cancelButtonTitle:@"OK"
+                                                      otherButtonTitles:nil];
+                searchBox.text = alertStr;
+                [alert show];
             } else {
-                // left turn
+                alertStr = @"TURN LEFT";
+                if (lastStep) {
+                    alertStr = @"ARRIVE LEFT";
+                    
+                }
+                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:alertStr
+                                                                message:[NSString stringWithFormat:@"Angle: %f", ang]
+                                                               delegate:nil
+                                                      cancelButtonTitle:@"OK"
+                                                      otherButtonTitles:nil];
+                searchBox.text = alertStr;
+                [alert show];
             }
         }
         curPointIndex++;
@@ -594,7 +635,7 @@ static BOOL confirmed;
                  
                  [mapView setVisibleMapRect:route.polyline.boundingMapRect edgePadding:UIEdgeInsetsMake(5, 5, 5, 5) animated:YES];
 
-                 searchBox.text = [NSString stringWithFormat:@"Distance left of first step: %f",[(MKRouteStep *)[route.steps objectAtIndex:0] distance]];
+                 //searchBox.text = [NSString stringWithFormat:@"Distance left of first step: %f",[(MKRouteStep *)[route.steps objectAtIndex:0] distance]];
                  NSUInteger pointCount = route.polyline.pointCount;
                  //http://stackoverflow.com/a/21865454
                  //allocate a C array to hold this many points/coordinates...

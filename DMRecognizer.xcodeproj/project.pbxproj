@@ -18,6 +18,7 @@
 		37A7448C11BD768700D02E62 /* DMRecognizerAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 37A7448911BD768700D02E62 /* DMRecognizerAppDelegate.m */; };
 		37A7448D11BD768700D02E62 /* DMRecognizerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 37A7448B11BD768700D02E62 /* DMRecognizerViewController.m */; };
 		37A7451F11BD835300D02E62 /* AppIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 37A7451E11BD835300D02E62 /* AppIcon.png */; };
+		443043381C17DA4600861E95 /* TestGPSData.m in Sources */ = {isa = PBXBuildFile; fileRef = 443043371C17DA4600861E95 /* TestGPSData.m */; };
 		44664C281BF0B43800466BB1 /* RFduino.m in Sources */ = {isa = PBXBuildFile; fileRef = 44664C1F1BF0B43800466BB1 /* RFduino.m */; };
 		44664C291BF0B43800466BB1 /* RfduinoManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 44664C221BF0B43800466BB1 /* RfduinoManager.m */; };
 		44664C2A1BF0B43800466BB1 /* ScanViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 44664C251BF0B43800466BB1 /* ScanViewController.m */; };
@@ -57,6 +58,8 @@
 		37A7448E11BD769800D02E62 /* DMRecognizer_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DMRecognizer_Prefix.pch; sourceTree = "<group>"; };
 		37A7448F11BD76A800D02E62 /* DMRecognizer-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "DMRecognizer-Info.plist"; sourceTree = "<group>"; };
 		37A7451E11BD835300D02E62 /* AppIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AppIcon.png; sourceTree = "<group>"; };
+		443043361C17DA4600861E95 /* TestGPSData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestGPSData.h; sourceTree = "<group>"; };
+		443043371C17DA4600861E95 /* TestGPSData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestGPSData.m; sourceTree = "<group>"; };
 		44664C1E1BF0B43800466BB1 /* RFduino.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RFduino.h; sourceTree = "<group>"; };
 		44664C1F1BF0B43800466BB1 /* RFduino.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RFduino.m; sourceTree = "<group>"; };
 		44664C201BF0B43800466BB1 /* RFduinoDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RFduinoDelegate.h; sourceTree = "<group>"; };
@@ -125,6 +128,8 @@
 				44664C241BF0B43800466BB1 /* ScanViewController.h */,
 				44664C251BF0B43800466BB1 /* ScanViewController.m */,
 				44664C261BF0B43800466BB1 /* CustomCellBackground.h */,
+				443043361C17DA4600861E95 /* TestGPSData.h */,
+				443043371C17DA4600861E95 /* TestGPSData.m */,
 				44664C271BF0B43800466BB1 /* CustomCellBackground.m */,
 				37A7448811BD768700D02E62 /* DMRecognizerAppDelegate.h */,
 				37A7448911BD768700D02E62 /* DMRecognizerAppDelegate.m */,
@@ -229,7 +234,7 @@
 				LastUpgradeCheck = 0700;
 				TargetAttributes = {
 					1D6058900D05DD3D006BFB54 = {
-						DevelopmentTeam = AEG9D7NFBB;
+						DevelopmentTeam = GJ9UKFQH4Y;
 					};
 				};
 			};
@@ -281,6 +286,7 @@
 				44664C2A1BF0B43800466BB1 /* ScanViewController.m in Sources */,
 				1D60589B0D05DD56006BFB54 /* main.m in Sources */,
 				37A7448C11BD768700D02E62 /* DMRecognizerAppDelegate.m in Sources */,
+				443043381C17DA4600861E95 /* TestGPSData.m in Sources */,
 				37A7448D11BD768700D02E62 /* DMRecognizerViewController.m in Sources */,
 				44664C2B1BF0B43800466BB1 /* CustomCellBackground.m in Sources */,
 				44664C2F1BF0B4BA00466BB1 /* AppViewController.m in Sources */,
@@ -314,7 +320,7 @@
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				"OTHER_CFLAGS[arch=armv6]" = "-mno-thumb";
 				"OTHER_CFLAGS[arch=armv7]" = "";
-				PRODUCT_BUNDLE_IDENTIFIER = chiller1.Recognizer;
+				PRODUCT_BUNDLE_IDENTIFIER = chiller.Recognizer2;
 				PRODUCT_NAME = Recognizer;
 				PROVISIONING_PROFILE = "";
 			};
@@ -344,7 +350,7 @@
 					"-mno-thumb",
 				);
 				"OTHER_CFLAGS[arch=armv7]" = "-DNS_BLOCK_ASSERTIONS=1";
-				PRODUCT_BUNDLE_IDENTIFIER = chiller1.Recognizer;
+				PRODUCT_BUNDLE_IDENTIFIER = chiller.Recognizer2;
 				PRODUCT_NAME = Recognizer;
 				PROVISIONING_PROFILE = "";
 				VALIDATE_PRODUCT = YES;
