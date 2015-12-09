@@ -27,67 +27,26 @@
 #import <MapKit/MapKit.h>
 #import <MapKit/MKMapItem.h>
 #import <CoreLocation/CoreLocation.h>
+#import "TestGPSData.h"
 #import <math.h>
+#import <CoreLocation/CLPlacemark.h>
 
-/**
- * The login parameters should be specified in the following manner:
- * 
- * const unsigned char SpeechKitApplicationKey[] =
- * {
- *     0x38, 0x32, 0x0e, 0x46, 0x4e, 0x46, 0x12, 0x5c, 0x50, 0x1d,
- *     0x4a, 0x39, 0x4f, 0x12, 0x48, 0x53, 0x3e, 0x5b, 0x31, 0x22,
- *     0x5d, 0x4b, 0x22, 0x09, 0x13, 0x46, 0x61, 0x19, 0x1f, 0x2d,
- *     0x13, 0x47, 0x3d, 0x58, 0x30, 0x29, 0x56, 0x04, 0x20, 0x33,
- *     0x27, 0x0f, 0x57, 0x45, 0x61, 0x5f, 0x25, 0x0d, 0x48, 0x21,
- *     0x2a, 0x62, 0x46, 0x64, 0x54, 0x4a, 0x10, 0x36, 0x4f, 0x64
- * };
- * 
- * Please note that all the specified values are non-functional
- * and are provided solely as an illustrative example.
- * 
- */
 const unsigned char SpeechKitApplicationKey[] = {0xad, 0xe3, 0x39, 0xe9, 0xa8, 0x1d, 0x9f, 0xc8, 0xc8, 0xeb, 0xb0, 0xec, 0xb9, 0x1f, 0x26, 0x38, 0x4b, 0x5b, 0xc8, 0xfc, 0x09, 0x82, 0xc9, 0xe4, 0x42, 0xd4, 0x87, 0x44, 0xa8, 0x39, 0x18, 0x56, 0x1c, 0x51, 0x3f, 0xc4, 0x6e, 0xde, 0x8c, 0x36, 0xc9, 0x3c, 0x22, 0x82, 0x5b, 0x48, 0xba, 0xa7, 0xa4, 0x83, 0xa3, 0xad, 0x05, 0x6c, 0x91, 0x47, 0x41, 0x19, 0x8b, 0xe9, 0x52, 0xa3, 0x3f, 0x6f};
 
 @implementation DMRecognizerViewController
 @synthesize recordButton,searchBox,serverBox,portBox,alternativesDisplay,vuMeter,voiceSearch,curLocBox;
-@synthesize synthesizer, geocoder, currentAddress, currentLocation, directions, curLocLat, curLocLon, rfduino, placemark, timerDirectionsCount, mapView, prevPolyline, angles, curPointIndex, currentRoute;
+@synthesize synthesizer, geocoder, currentAddress, currentLocation, directions, curLocLat, curLocLon, rfduino, placemark, simulatedPointCount, mapView, prevPolyline, angles, curPointIndex, currentRoute, isDemo, isNavigating, simulatedPosition;
 @synthesize locationManager = _locationManager;
 
 static BOOL confirmed;
-/*
-// The designated initializer. Override to perform setup that is required before the view is loaded.
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
-    if ((self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil])) {
-        // Custom initialization
-    }
-    return self;
-}
-*/
-
-/*
-// Implement loadView to create a view hierarchy programmatically, without using a nib.
-- (void)loadView {
-}
-*/
 
 
 // Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
 - (void)viewDidLoad {
     [super viewDidLoad];
     confirmed = false;
-    /**    
-     * The login parameters should be specified in the following manner:
-     *
-     *  [SpeechKit setupWithID:@"ExampleSpeechKitSampleID"
-     *                    host:@"ndev.server.name"
-     *                    port:1000
-     *                  useSSL:NO
-     *                delegate:self];
-     *
-     * Please note that all the specified values are non-functional
-     * and are provided solely as an illustrative example.
-     */ 
-
+    isDemo = NO;
+    isNavigating = NO;
     [SpeechKit setupWithID:@"NMDPTRIAL_chiller_berkeley_edu20151025205244"
                       host:@"sandbox.nmdp.nuancemobility.net"
                       port:443
@@ -132,6 +91,7 @@ static BOOL confirmed;
     // if you like to add backgroundImage else no need
     
     [self.view addSubview:but2];
+    // set up the map
     
     mapView = [[MKMapView alloc] initWithFrame:CGRectMake(10, [[UIScreen mainScreen] bounds].size.height-210, [[UIScreen mainScreen] bounds].size.width-20, 200)];
     [mapView setScrollEnabled:YES];
@@ -141,6 +101,8 @@ static BOOL confirmed;
     [mapView setDelegate:self];
     [mapView.layer setCornerRadius:10];
     [mapView.layer setMasksToBounds:YES];
+    [mapView.layer setBorderColor:[UIColor blackColor].CGColor];
+    [mapView.layer setBorderWidth:1.0f];
     [self.view addSubview:mapView];
 }
 
@@ -163,29 +125,32 @@ static BOOL confirmed;
 }
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateToLocation:(CLLocation *)newLocation fromLocation:(CLLocation *)oldLocation {
-    currentLocation = newLocation;
-    curLocLat = newLocation.coordinate.latitude;
-    curLocLon = newLocation.coordinate.longitude;
-    NSLog(@"new location lat:%f lon:%f", curLocLat, curLocLon);
-    if(!placemark){
-        [geocoder reverseGeocodeLocation:newLocation completionHandler:^(NSArray *placemarks, NSError *error) {
-            if(error){
-                NSLog(@"%@", [error localizedDescription]);
-            }
-            
-            CLPlacemark *placemark = [placemarks lastObject];
-            
-            currentAddress = [NSString stringWithFormat:@"%@ %@\n%@ %@\n%@\n%@",
-                                  placemark.subThoroughfare, placemark.thoroughfare,
-                                  placemark.postalCode, placemark.locality,
-                                  placemark.administrativeArea,
-                                  placemark.country];
-            //NSLog(@"%@", currentAddress);
-            [curLocBox setText:currentAddress];
-
-        }];
+    if (!isDemo) {
+            currentLocation = newLocation;
+            curLocLat = newLocation.coordinate.latitude;
+            curLocLon = newLocation.coordinate.longitude;
+            NSLog(@"new location lat:%f lon:%f", curLocLat, curLocLon);
+        //    if(!placemark){
+        //        [geocoder reverseGeocodeLocation:newLocation completionHandler:^(NSArray *placemarks, NSError *error) {
+        //            if(error){
+        //                NSLog(@"%@", [error localizedDescription]);
+        //            }
+        //            
+        //            placemark = [placemarks lastObject];
+        //            
+        //            currentAddress = [NSString stringWithFormat:@"%@ %@\n%@ %@\n%@\n%@",
+        //                                  placemark.subThoroughfare, placemark.thoroughfare,
+        //                                  placemark.postalCode, placemark.locality,
+        //                                  placemark.administrativeArea,
+        //                                  placemark.country];
+        //            [curLocBox setText:currentAddress];
+        //
+        //        }];
+        //    }
+        if (isNavigating) {
+            [self trackPosition];
+        }
     }
-    [self trackPosition];
 }
 - (void)didReceiveMemoryWarning {
 	// Releases the view if it doesn't have a superview.
@@ -331,56 +296,48 @@ static BOOL confirmed;
     [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(updateVUMeter) object:nil];
     [self setVUMeterWidth:0.];
     transactionState = TS_PROCESSING;
+    [recordButton setTintColor:[UIColor yellowColor]];
     [recordButton setTitle:@"Processing..." forState:UIControlStateNormal];
 }
 
 - (void)recognizer:(SKRecognizer *)recognizer didFinishWithResults:(SKRecognition *)results
 {
     NSLog(@"Got results.");
-    NSLog(@"Session id [%@].", [SpeechKit sessionID]); // for debugging purpose: printing out the speechkit session id 
 
     long numOfResults = [results.results count];
     
     transactionState = TS_IDLE;
     [recordButton setTitle:@"Record" forState:UIControlStateNormal];
     
-    if (numOfResults > -10) {
-        if (0){//!confirmed) {
+    if (numOfResults > 0) {
+        if (!confirmed) {
+            // initial path into the code, to verify end location
             searchBox.text = [results firstResult];
+            if ([[[results firstResult]lowercaseString] isEqualToString:@"demo"]) {
+                [self runDemo];
+                return;
+            }
             AVSpeechUtterance *utterance = [[AVSpeechUtterance alloc] initWithString:[NSString stringWithFormat:@"Did you mean %@?",[results firstResult]]];
-            
             utterance.voice = [AVSpeechSynthesisVoice voiceWithLanguage:@"en-us"];
             [self.synthesizer speakUtterance:utterance];
-            
             confirmed = true;
-
             [self performSelector:@selector(recordButtonActionFn) withObject:nil afterDelay:2.0 ];
-            /*voiceSearch = [[SKRecognizer alloc] initWithType:SKSearchRecognizerType
-             detection:SKShortEndOfSpeechDetection
-             language:@"en_US"
-             delegate:self];*/
         } else {
-            if (1==1) {
-                searchBox.text = @"2521 Hearst Ave Berkeley, CA  94709-1114 United States";
-
             // if yes, get directions to whatever place
-            //if ([[results firstResult] isEqualToString:@"Yes"]) {
-                NSLog(@"YAY");
+            if ([[results firstResult] isEqualToString:@"Yes"]) {
                 AVSpeechUtterance *utterance = [[AVSpeechUtterance alloc] initWithString:[NSString stringWithFormat:@"OK, getting directions to %@",searchBox.text]];
                 
                 utterance.voice = [AVSpeechSynthesisVoice voiceWithLanguage:@"en-us"];
                 [self.synthesizer speakUtterance:utterance];
 
                 confirmed = false;
-               // [geocoder geocodeAddressString:searchBox.text completionHandler:^(NSArray *placemarks, NSError *error) {
-
                 [geocoder geocodeAddressString:searchBox.text completionHandler:^(NSArray *placemarks, NSError *error) {
                     if(error){
                         NSLog(@"%@", [error localizedDescription]);
                     }
                     
                     placemark = [placemarks lastObject];
-                    [self setupRoutes];
+                    [self setupRoutesStartPoint:currentLocation endPoint:[placemark location]];
                 }];
                  
 
@@ -393,69 +350,28 @@ static BOOL confirmed;
                 utterance.voice = [AVSpeechSynthesisVoice voiceWithLanguage:@"en-us"];
                 [self.synthesizer speakUtterance:utterance];
                 [self performSelector:@selector(recordButtonActionFn) withObject:nil afterDelay:2.0 ];
-
             }
-
         }
- 
-
-        
-        
-
     }
-	//if (numOfResults > 1)
-	//	alternativesDisplay.text = [[results.results subarrayWithRange:NSMakeRange(1, numOfResults-1)] componentsJoinedByString:@"\n"];
     
     if (results.suggestion){
-        UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Suggestion"
-                                                                       message:results.suggestion
-                                                                preferredStyle:UIAlertControllerStyleAlert];
+        AVSpeechUtterance *utterance = [[AVSpeechUtterance alloc] initWithString:@"Oops something went wrong, please try again"];
         
-        UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault
-                                                              handler:^(UIAlertAction * action) {}];
-        
-        [alert addAction:defaultAction];
-        [self presentViewController:alert animated:YES completion:nil];
-        
+        utterance.voice = [AVSpeechSynthesisVoice voiceWithLanguage:@"en-us"];
+        [self.synthesizer speakUtterance:utterance];
+        confirmed = false;
     }
-
-	//[voiceSearch release];
 	voiceSearch = nil;
 }
 
 - (void)recognizer:(SKRecognizer *)recognizer didFinishWithError:(NSError *)error suggestion:(NSString *)suggestion
 {
-    NSLog(@"Got error.");
-    NSLog(@"Session id [%@].", [SpeechKit sessionID]); // for debugging purpose: printing out the speechkit session id 
+    AVSpeechUtterance *utterance = [[AVSpeechUtterance alloc] initWithString:@"Oops something went wrong, please try again"];
     
-    transactionState = TS_IDLE;
-    [recordButton setTitle:@"Record" forState:UIControlStateNormal];
-    
-    
-    UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Error"
-                                                                   message:[error localizedDescription]
-                                                            preferredStyle:UIAlertControllerStyleAlert];
-    
-    UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault
-                                                          handler:^(UIAlertAction * action) {}];
-    
-    [alert addAction:defaultAction];
-    [self presentViewController:alert animated:YES completion:nil];
-    
-    if (suggestion) {
-        UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Suggestion"
-                                                                       message:suggestion
-                                                                preferredStyle:UIAlertControllerStyleAlert];
-        
-        UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault
-                                                              handler:^(UIAlertAction * action) {}];
-        
-        [alert addAction:defaultAction];
-        [self presentViewController:alert animated:YES completion:nil];
-        
-    }
-    
-	//[voiceSearch release];
+    utterance.voice = [AVSpeechSynthesisVoice voiceWithLanguage:@"en-us"];
+    [self.synthesizer speakUtterance:utterance];
+    confirmed = false;
+
 	voiceSearch = nil;
 }
 
@@ -510,11 +426,23 @@ static BOOL confirmed;
 
 }
 
-- (MKOverlayView *)mapView:(MKMapView *)mapView viewForOverlay:(id <MKOverlay>)overlay {
-    MKPolylineView *polylineView = [[MKPolylineView alloc] initWithPolyline:overlay];
-    polylineView.strokeColor = [UIColor blueColor];
-    polylineView.lineWidth = 5.0;
-    return polylineView;
+
+- (MKOverlayRenderer *)mapView:(MKMapView *)mapView rendererForOverlay:(id<MKOverlay>)overlay {
+    if ([overlay isKindOfClass:[MKPolyline class]]) {
+        MKPolylineRenderer *polyrender = [[MKPolylineRenderer alloc] initWithOverlay:overlay];
+        polyrender.strokeColor = [UIColor blueColor];
+        polyrender.lineWidth = 5.0;
+        return polyrender;
+    } else if ([overlay isKindOfClass:[MKCircle class]]) {
+        NSLog(@"make a circle!");
+        MKCircleRenderer *circleRender = [[MKCircleRenderer alloc] initWithOverlay:overlay];
+        circleRender.lineWidth = 5;
+        circleRender.strokeColor = [UIColor redColor];
+        circleRender.fillColor = [[UIColor redColor] colorWithAlphaComponent:1];
+        return circleRender;
+    }
+    // if not one of those, return an empty one
+    return [[MKOverlayRenderer alloc] init];
 }
 // https://software.intel.com/en-us/blogs/2012/11/30/calculating-a-bearing-between-points-in-location-aware-apps
 -(double)getBearingForLocation1:(CLLocationCoordinate2D)loc1 location2:(CLLocationCoordinate2D)loc2{
@@ -604,67 +532,108 @@ static BOOL confirmed;
         curPointIndex++;
     }
 }
--(void) setupRoutes {
-    if (placemark) {
-        MKPlacemark *placemarkSrc = [[MKPlacemark alloc] initWithCoordinate:CLLocationCoordinate2DMake(curLocLat, curLocLon) addressDictionary:nil];
-        MKMapItem *mapItemSrc = [[MKMapItem alloc] initWithPlacemark:placemarkSrc];
-        
-        MKPlacemark *placemarkDest = [[MKPlacemark alloc] initWithCoordinate:placemark.location.coordinate addressDictionary:nil];
-            
-        MKMapItem *mapItemDest = [[MKMapItem alloc] initWithPlacemark:placemarkDest];
-        MKDirectionsRequest *request = [[MKDirectionsRequest alloc] init];
-            NSLog(@"MapItemFor current loc lat:%f lon:%f",mapItemSrc.placemark.coordinate.latitude, mapItemSrc.placemark.coordinate.longitude );
-        [request setSource:mapItemSrc];
-        [request setDestination:mapItemDest];
-        [request setTransportType:MKDirectionsTransportTypeWalking];
-        request.requestsAlternateRoutes = NO;
-        
-        MKDirections *dirs = [[MKDirections alloc] initWithRequest:request];
-        [dirs calculateDirectionsWithCompletionHandler:
-         ^(MKDirectionsResponse *response, NSError *error) {
-             if (error) {
-                 [directions setText:[NSString stringWithFormat:@"ERROR: %@!", error.description]];
-                 
-             } else {
-                 MKRoute *route = (MKRoute *)[[response routes] objectAtIndex:0];
-                 if (prevPolyline) {
-                     [mapView removeOverlay:prevPolyline];
-                 }
-                 [mapView addOverlay:route.polyline];
-                 prevPolyline = route.polyline;
-                 
-                 [mapView setVisibleMapRect:route.polyline.boundingMapRect edgePadding:UIEdgeInsetsMake(5, 5, 5, 5) animated:YES];
+-(void) runDemo {
+    // TODO: fill in code to run the demo
+    isDemo = YES;
+    isNavigating = YES;
+    searchBox.text = @"2521 Hearst Ave Berkeley, CA  94709-1114 United States";
+    CLLocation *startPoint = (CLLocation *)[[TestGPSData GPSData] firstObject];
+    CLLocation *endPoint =(CLLocation *)[[TestGPSData GPSData] lastObject];
+    // setup the map for demo-ness
+    [mapView setShowsUserLocation:NO];
+    // start the demo route
+    [self setupRoutesStartPoint:startPoint endPoint:endPoint];
+    NSLog(@"about to setup sim");
+    
+    // setup the timer for position updates
+    [NSTimer scheduledTimerWithTimeInterval:0.2f
+                                     target:self selector:@selector(simulateLocationPoints) userInfo:nil repeats:YES];
+}
 
-                 //searchBox.text = [NSString stringWithFormat:@"Distance left of first step: %f",[(MKRouteStep *)[route.steps objectAtIndex:0] distance]];
-                 NSUInteger pointCount = route.polyline.pointCount;
-                 //http://stackoverflow.com/a/21865454
-                 //allocate a C array to hold this many points/coordinates...
-                 CLLocationCoordinate2D *rc = malloc(pointCount * sizeof(CLLocationCoordinate2D));
-                 
-                 
-                 //get the coordinates (all of them)...
-                 [route.polyline getCoordinates:rc
-                                          range:NSMakeRange(0, pointCount)];
-                 
-                 angles = [[NSMutableArray alloc] initWithCapacity:pointCount];
-                 [angles addObject:[NSNumber numberWithDouble:0]];
-                 
-                 //this part just shows how to use the results...
-                 NSLog(@"route pointCount = %lu", (unsigned long)pointCount);
-                 for (int c = 1; c < pointCount - 1; c++)
-                 {
-                     [angles addObject:[NSNumber numberWithDouble:[self getDifferenceBetweenAngle1:[self getBearingForLocation1:rc[c-1] location2:rc[c]] angle2:[self getBearingForLocation1:rc[c] location2:rc[c+1]]]]];
-                     NSLog(@"routeCoordinates[%d] = %f, %f",
-                           c, rc[c].latitude, rc[c].longitude);
-                     NSLog(@"Angle: %f",[self getDifferenceBetweenAngle1:[self getBearingForLocation1:rc[c-1] location2:rc[c]] angle2:[self getBearingForLocation1:rc[c] location2:rc[c+1]]]);
-                     NSLog(@"Distance from cur to point: %f", [currentLocation distanceFromLocation:[[CLLocation alloc] initWithLatitude:rc[c].latitude longitude:rc[c].longitude]] );
-                 }
-                 
-                 //free the memory used by the C array when done with it...
-                 free(rc);
-                 currentRoute = route;
-             }
-         }];
+
+
+-(void) simulateLocationPoints {
+    NSLog(@"in sim");
+    if (simulatedPointCount >= [[TestGPSData GPSData] count]) {
+        // end of simulation, do nothing
+        return;
+    } else {
+        CLLocation *newLocation = (CLLocation *)[[TestGPSData GPSData] objectAtIndex:simulatedPointCount];
+        currentLocation = newLocation;
+        curLocLat = newLocation.coordinate.latitude;
+        curLocLon = newLocation.coordinate.longitude;
     }
+    simulatedPointCount++;
+    // show the simulated point on the map
+    MKCircle *circle = [MKCircle circleWithCenterCoordinate:currentLocation.coordinate radius:10];
+    if (simulatedPosition) {
+        [mapView removeOverlay:simulatedPosition];
+    }
+    [mapView addOverlay:circle];
+    simulatedPosition = circle;
+    [self trackPosition];
+
+}
+-(void) setupRoutesStartPoint:(CLLocation *)start endPoint:(CLLocation *)end {
+    isNavigating = YES;
+    MKPlacemark *placemarkSrc = [[MKPlacemark alloc] initWithCoordinate:start.coordinate addressDictionary:nil];
+    MKMapItem *mapItemSrc = [[MKMapItem alloc] initWithPlacemark:placemarkSrc];
+    
+    MKPlacemark *placemarkDest = [[MKPlacemark alloc] initWithCoordinate:end.coordinate addressDictionary:nil];
+        
+    MKMapItem *mapItemDest = [[MKMapItem alloc] initWithPlacemark:placemarkDest];
+    MKDirectionsRequest *request = [[MKDirectionsRequest alloc] init];
+
+    [request setSource:mapItemSrc];
+    [request setDestination:mapItemDest];
+    [request setTransportType:MKDirectionsTransportTypeWalking];
+    [request setRequestsAlternateRoutes:NO];
+    
+    MKDirections *dirs = [[MKDirections alloc] initWithRequest:request];
+    [dirs calculateDirectionsWithCompletionHandler:
+     ^(MKDirectionsResponse *response, NSError *error) {
+         if (error) {
+             // this might infinite loop...but also might work?
+             [self setupRoutesStartPoint:start endPoint:end];
+             
+         } else {
+             MKRoute *route = (MKRoute *)[[response routes] objectAtIndex:0];
+             if (prevPolyline) {
+                 [mapView removeOverlay:prevPolyline];
+             }
+             [mapView addOverlay:route.polyline];
+             prevPolyline = route.polyline;
+             
+             [mapView setVisibleMapRect:route.polyline.boundingMapRect edgePadding:UIEdgeInsetsMake(5, 5, 5, 5) animated:YES];
+
+             NSUInteger pointCount = route.polyline.pointCount;
+             //http://stackoverflow.com/a/21865454
+             //allocate a C array to hold this many points/coordinates...
+             CLLocationCoordinate2D *rc = malloc(pointCount * sizeof(CLLocationCoordinate2D));
+             
+             
+             //get the coordinates (all of them)...
+             [route.polyline getCoordinates:rc
+                                      range:NSMakeRange(0, pointCount)];
+             
+             angles = [[NSMutableArray alloc] initWithCapacity:pointCount];
+             [angles addObject:[NSNumber numberWithDouble:0]];
+             
+             //this part just shows how to use the results...
+             NSLog(@"route pointCount = %lu", (unsigned long)pointCount);
+             for (int c = 1; c < pointCount - 1; c++)
+             {
+                 [angles addObject:[NSNumber numberWithDouble:[self getDifferenceBetweenAngle1:[self getBearingForLocation1:rc[c-1] location2:rc[c]] angle2:[self getBearingForLocation1:rc[c] location2:rc[c+1]]]]];
+                 NSLog(@"routeCoordinates[%d] = %f, %f",
+                       c, rc[c].latitude, rc[c].longitude);
+                 NSLog(@"Angle: %f",[self getDifferenceBetweenAngle1:[self getBearingForLocation1:rc[c-1] location2:rc[c]] angle2:[self getBearingForLocation1:rc[c] location2:rc[c+1]]]);
+                 NSLog(@"Distance from cur to point: %f", [currentLocation distanceFromLocation:[[CLLocation alloc] initWithLatitude:rc[c].latitude longitude:rc[c].longitude]] );
+             }
+             
+             //free the memory used by the C array when done with it...
+             free(rc);
+             currentRoute = route;
+         }
+     }];
 }
 @end
