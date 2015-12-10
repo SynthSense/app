@@ -406,6 +406,18 @@ static BOOL confirmed;
 {
     [self sendByte:1];
 }
+-(void) leftTurn{
+    [self sendByte:0];
+}
+-(void) rightTurn{
+    [self sendByte:1];
+}
+-(void) leftTurnArrive{
+    [self sendByte:2];
+}
+-(void) rightTurnArrive{
+    [self sendByte:3];
+}
 - (void)sendByte:(uint8_t)byte
 {
     uint8_t tx[1] = { byte };
@@ -496,37 +508,23 @@ static BOOL confirmed;
         }
     }
 
-    searchBox.text = [NSString stringWithFormat:@"Distance from next point: %.2f ang: %.2f", dist, ang];
+    //wsearchBox.text = [NSString stringWithFormat:@"Distance from next point: %.2f ang: %.2f", dist, ang];
     if (dist < 10) { // change if less than 10 meters away
         // alert the user
         NSString *alertStr;
         if ( fabs(ang) > 65) {
             if (ang < 0) {
-                alertStr = @"TURN RIGHT";
                 if (lastStep) {
-                    alertStr = @"ARRIVE RIGHT";
-
+                    [self rightTurnArrive];
+                } else {
+                    [self rightTurn];
                 }
-                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:alertStr
-                                                                message:[NSString stringWithFormat:@"Angle: %f", ang]
-                                                               delegate:nil
-                                                      cancelButtonTitle:@"OK"
-                                                      otherButtonTitles:nil];
-                searchBox.text = alertStr;
-                [alert show];
             } else {
-                alertStr = @"TURN LEFT";
                 if (lastStep) {
-                    alertStr = @"ARRIVE LEFT";
-                    
+                    [self leftTurnArrive];
+                } else {
+                    [self leftTurn];
                 }
-                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:alertStr
-                                                                message:[NSString stringWithFormat:@"Angle: %f", ang]
-                                                               delegate:nil
-                                                      cancelButtonTitle:@"OK"
-                                                      otherButtonTitles:nil];
-                searchBox.text = alertStr;
-                [alert show];
             }
         }
         curPointIndex++;

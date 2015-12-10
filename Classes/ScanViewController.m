@@ -54,7 +54,7 @@
         
         rfduinoManager = [RFduinoManager sharedRFduinoManager];
     }
-    [[[UIApplication sharedApplication] delegate] performSelector:@selector(setVCAndRFDuino:) withObject:nil];
+    //[[[UIApplication sharedApplication] delegate] performSelector:@selector(setVCAndRFDuino:) withObject:nil];
 
     return self;
 }
@@ -82,7 +82,7 @@
     gradient.frame = CGRectMake(0.0, 0.0, 1024.0, 1024.0);
     gradient.colors = [NSArray arrayWithObjects:(id)start.CGColor, (id)stop.CGColor, nil];
     [self.tableView.layer insertSublayer:gradient atIndex:0];
-    [[[UIApplication sharedApplication] delegate] performSelector:@selector(setVCAndRFDuino:) withObject:nil];
+    //[[[UIApplication sharedApplication] delegate] performSelector:@selector(setVCAndRFDuino:) withObject:nil];
 
 }
 
