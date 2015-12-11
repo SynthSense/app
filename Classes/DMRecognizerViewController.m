@@ -486,6 +486,9 @@ static BOOL confirmed;
     return r*sign;
 }
 -(void) trackPosition{
+    if (!isNavigating) {
+        return;
+    }
     NSUInteger pointCount = currentRoute.polyline.pointCount;
     //http://stackoverflow.com/a/21865454
     //allocate a C array to hold this many points/coordinates...
@@ -533,7 +536,6 @@ static BOOL confirmed;
 -(void) runDemo {
     // TODO: fill in code to run the demo
     isDemo = YES;
-    isNavigating = YES;
     searchBox.text = @"2521 Hearst Ave Berkeley, CA  94709-1114 United States";
     CLLocation *startPoint = (CLLocation *)[[TestGPSData GPSData] firstObject];
     CLLocation *endPoint =(CLLocation *)[[TestGPSData GPSData] lastObject];
@@ -544,7 +546,7 @@ static BOOL confirmed;
     NSLog(@"about to setup sim");
     
     // setup the timer for position updates
-    [NSTimer scheduledTimerWithTimeInterval:0.2f
+    [NSTimer scheduledTimerWithTimeInterval:0.1f
                                      target:self selector:@selector(simulateLocationPoints) userInfo:nil repeats:YES];
 }
 
@@ -553,7 +555,8 @@ static BOOL confirmed;
 -(void) simulateLocationPoints {
     NSLog(@"in sim");
     if (simulatedPointCount >= [[TestGPSData GPSData] count]) {
-        // end of simulation, do nothing
+        // end of simulation, stop navigation
+        isNavigating = NO;
         return;
     } else {
         CLLocation *newLocation = (CLLocation *)[[TestGPSData GPSData] objectAtIndex:simulatedPointCount];

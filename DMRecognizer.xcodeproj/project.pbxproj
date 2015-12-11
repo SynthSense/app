@@ -316,7 +316,7 @@
 				GCC_THUMB_SUPPORT = NO;
 				GCC_VERSION = "";
 				INFOPLIST_FILE = "DMRecognizer-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				"OTHER_CFLAGS[arch=armv6]" = "-mno-thumb";
 				"OTHER_CFLAGS[arch=armv7]" = "";
@@ -343,7 +343,7 @@
 				GCC_THUMB_SUPPORT = NO;
 				GCC_VERSION = "";
 				INFOPLIST_FILE = "DMRecognizer-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				"OTHER_CFLAGS[arch=armv6]" = (
 					"-DNS_BLOCK_ASSERTIONS=1",
